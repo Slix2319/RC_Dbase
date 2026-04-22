@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPRO Database</title>
+<style>
+:root{--bg:#f0f2f6;--bg2:#f5f7fc;--bg3:#eef0f6;--card:#fff;--bo:#dde3ee;--bo2:#c8d0e0;--tx:#1a2540;--tx2:#7a8aaa;--tx3:#9aaac0;--top:#1a2540;--thdr:#1e2d4a;--red:#C0392B;--red2:#fdecea;--green:#27ae60;--green2:#e8f8ee;--amber:#e67e22;--amber2:#fef3e2;--blue:#2980b9;--blue2:#eaf4fc;--r:10px;--r2:6px;--r3:4px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);min-height:100vh;font-size:13px;line-height:1.5;font-family:'Segoe UI',system-ui,sans-serif}
+.screen{display:none}.screen.active{display:block}
+.top{background:var(--top);height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:100}
+.logo{font-size:14px;font-weight:700;color:#fff;letter-spacing:.07em}
+.logo span{color:#8899bb;font-weight:400;font-size:11px;margin-left:6px}
+.tnav{display:flex;gap:3px;align-items:center}
+.np{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;color:#8899bb;letter-spacing:.04em;transition:all .15s;text-transform:uppercase}
+.np:hover{color:#fff;background:rgba(255,255,255,.1)}
+.np.active{color:#fff;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2)}
+.lb{padding:3px 8px;border-radius:20px;font-size:14px;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:transparent;transition:all .15s}
+.lb.active{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.3)}
+.clrdb{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;color:#9aaac0;border:1px solid rgba(150,160,180,.25);background:rgba(100,110,130,.15);margin-left:6px;transition:all .15s}
+.clrdb:hover{color:#ccc;background:rgba(100,110,130,.25)}
+.page{max-width:980px;margin:0 auto;padding:20px 16px}
+.page-hdr{font-size:10px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--bo);border-radius:var(--r);padding:14px}
+.shdr{font-size:9px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--bo)}
+.fg4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fb{display:flex;flex-direction:column;gap:3px}
+.flbl{font-size:9px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em}
+.fb select,.fb input[type=number]{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--r3);padding:6px 8px;color:var(--tx);font-size:12px;font-weight:600;outline:none;width:100%}
+.fb select:focus{border-color:var(--red)}
+.cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.cc{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--r2);padding:8px}
+.cc.active{border-color:var(--red);background:var(--red2)}
+.cc select,.cc input{width:100%;background:var(--card);border:1px solid var(--bo);border-radius:3px;padding:4px 6px;color:var(--tx);font-size:11px;margin-bottom:4px;outline:none;font-weight:600}
+.cc select:last-child,.cc input:last-child{margin-bottom:0}
+.cclbl{font-size:9px;font-weight:800;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.arow{display:flex;justify-content:flex-end;gap:8px}
+.btn{padding:7px 18px;border-radius:var(--r3);font-size:11px;font-weight:800;cursor:pointer;border:none;letter-spacing:.06em;text-transform:uppercase;transition:all .15s}
+.btn-p{background:var(--red);color:#fff}.btn-p:hover{background:#a93226}
+.btn-g{background:var(--card);color:var(--tx2);border:1px solid var(--bo)}.btn-g:hover{background:var(--bg2)}
+.btn-p:disabled{background:var(--bo);color:var(--tx3);cursor:not-allowed}
+.uzone{border:2px dashed var(--bo2);border-radius:var(--r);padding:36px 24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card)}
+.uzone:hover,.uzone.drag{border-color:var(--red);background:var(--red2)}
+.uico{font-size:32px;margin-bottom:8px}
+.utit{font-size:14px;font-weight:700;margin-bottom:3px;color:var(--tx)}
+.usub{color:var(--tx2);font-size:11px}
+.nbox{margin-top:12px}
+.nlbl{font-size:9px;font-weight:800;color:var(--tx2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em}
+.ninp{width:100%;background:var(--bg2);border:1px solid var(--bo);border-radius:var(--r2);padding:8px 10px;color:var(--tx);font-size:13px;font-weight:600;outline:none}
+.ninp:focus{border-color:var(--red)}
+.nwarn{background:var(--amber2);border:1px solid rgba(230,126,34,.25);border-radius:var(--r3);padding:8px 11px;margin-top:6px;font-size:11px;color:var(--amber);display:none;gap:8px;align-items:center}
+.wbtn{padding:2px 8px;border-radius:3px;border:1px solid rgba(230,126,34,.3);background:rgba(230,126,34,.1);color:var(--amber);cursor:pointer;font-size:10px;font-weight:800}
+.plog{background:var(--bg2);border-radius:var(--r3);padding:10px;margin-top:10px;font-family:monospace;font-size:11px;color:var(--tx2);max-height:130px;overflow-y:auto;display:none;border:1px solid var(--bo)}
+.lok{color:var(--green)}.lwarn{color:var(--amber)}
+.pbar-wrap{margin-top:8px;display:none}
+.pbar{height:4px;background:var(--bo);border-radius:2px;overflow:hidden}
+.pbf{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
+.fcard{background:var(--card);border:1px solid var(--bo);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.res-empty{background:var(--card);border:1px dashed var(--bo2);border-radius:var(--r);padding:36px;text-align:center;color:var(--tx2);font-weight:600;font-size:12px}
+.rwrap{background:var(--card);border:1px solid var(--bo);border-radius:var(--r);overflow:hidden}
+.rhdr{padding:9px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--thdr)}
+.rhdr-count{font-size:11px;font-weight:800;color:#fff;letter-spacing:.04em;text-transform:uppercase}
+.rhdr-sub{font-size:10px;color:#8899bb}
+.rtbl{width:100%;border-collapse:collapse;font-size:12px}
+.rtbl thead tr{background:var(--thdr)}
+.rtbl th{padding:7px 10px;text-align:left;color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.rtbl td{padding:7px 10px;border-bottom:1px solid var(--bo);cursor:pointer;color:var(--tx)}
+.rtbl tr:nth-child(even) td{background:var(--bg2)}
+.rtbl tr:hover td{background:#eef2ff}
+.bq{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;background:#1e3a5f;color:#7ab3e8}
+.bp{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;background:#1a3d24;color:#5dcc5d}
+.bp-bad{background:#3d1a1a;color:#e06060}
+.dback{display:flex;align-items:center;gap:5px;color:var(--tx2);cursor:pointer;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.dback:hover{color:var(--tx)}
+.dhead{background:var(--top);border-radius:var(--r) var(--r) 0 0;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.dname{font-size:17px;font-weight:700;color:#fff;letter-spacing:.03em}
+.dmeta{font-size:11px;color:#8899bb;margin-top:2px}
+.ptags{display:flex;gap:6px}
+.ptag{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(255,255,255,.12);color:#fff}
+.dtabs{display:flex;gap:0;border-bottom:1px solid var(--bo);overflow-x:auto;background:var(--card);padding:0 4px}
+.dtab{padding:9px 14px;font-size:10px;font-weight:800;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase;transition:all .15s}
+.dtab:hover{color:var(--tx)}
+.dtab.active{color:var(--red);border-bottom-color:var(--red)}
+.dsec{display:none}.dsec.active{display:block}
+.sec-hdr{background:var(--thdr);color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:6px 10px;border-radius:var(--r3);margin-bottom:8px}
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:7px;margin-bottom:12px}
+.mc{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--r2);padding:9px 10px}
+.ml{font-size:9px;color:var(--tx2);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.mv{font-size:18px;font-weight:800;color:var(--tx)}
+.dtag{font-size:9px;color:var(--amber);margin-left:2px;cursor:help}
+.dc{background:var(--card);border:1px solid var(--bo);border-radius:var(--r2);padding:12px;margin-bottom:8px}
+.dct{font-size:9px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:0.5px solid var(--bo)}
+.dr:last-child{border-bottom:none}
+.drl{font-size:11px;color:var(--tx2)}
+.drv{font-size:11px;font-weight:700;color:var(--tx)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.brow{margin-bottom:6px}
+.blr{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px}
+.bt{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.bf{height:100%;border-radius:3px}
+.wt{height:8px;background:var(--bg3);border-radius:3px;position:relative}
+.wpre{position:absolute;top:0;left:0;height:100%;border-radius:3px;opacity:.3}
+.wpost{position:absolute;top:0;left:0;height:100%;border-radius:3px}
+.dp{display:inline-block;padding:1px 7px;border-radius:20px;font-size:10px;font-weight:800}
+.dp-p{background:#1a3d24;color:#5dcc5d}
+.dp-n{background:#3d1a1a;color:#e06060}
+.dp-0{background:#2a2e3a;color:#8899bb}
+.stag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:800}
+.st-p{background:#1a3d24;color:#5dcc5d}
+.st-q1{background:#1e3a5f;color:#7ab3e8}
+.st-q2{background:#2d1e5f;color:#b3a8e8}
+.st-r{background:#3d2e1a;color:#e8c87a}
+.erow{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.elbl{font-size:10px;color:var(--tx2);font-weight:700;text-transform:uppercase;letter-spacing:.05em;min-width:34px}
+.etrk{flex:1;height:9px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.efill{height:100%;border-radius:5px}
+.eval{font-size:11px;min-width:90px;text-align:right;font-weight:600}
+.sbar{display:flex;align-items:center;gap:0;height:14px;margin:18px 0 26px}
+.sseg{height:100%;position:relative}
+.sseg:first-child{border-radius:3px 0 0 3px}.sseg:last-child{border-radius:0 3px 3px 0}
+.sseg span.sl{position:absolute;top:-15px;left:4px;font-size:9px;color:var(--tx2);font-weight:700}
+.sseg span.sb{position:absolute;bottom:-15px;left:4px;font-size:9px;color:var(--tx2)}
+.pmark{width:3px;height:20px;background:var(--red);flex-shrink:0;border-radius:2px}
+.ptbl{width:100%;border-collapse:collapse;font-size:11px}
+.ptbl thead tr{background:var(--thdr)}
+.ptbl th{padding:6px 8px;text-align:left;color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.ptbl td{padding:5px 8px;border-bottom:0.5px solid var(--bo)}
+.ptbl tr:nth-child(even) td{background:var(--bg2)}
+.ptbl tr:last-child td{border-bottom:none}
+.ltbl{width:100%;border-collapse:collapse;font-size:11px}
+.ltbl thead tr{background:var(--thdr)}
+.ltbl th{padding:6px 8px;text-align:left;color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;z-index:2;background:#1e2d4a}
+.ltbl td{padding:5px 8px;border-bottom:0.5px solid var(--bo);color:var(--tx)}
+.ltbl tr:nth-child(even) td{background:var(--bg2)}
+.ltbl tr.ev-pit td{background:rgba(230,126,34,.07)}
+.ltbl tr.ev-prob td{background:rgba(192,57,43,.07)}
+.ltbl tr.ev-boost td{background:rgba(41,128,185,.07)}
+.ltbl tr:hover td{background:#eef2ff}
+.evt-pit{color:var(--amber);font-weight:800;font-size:10px;letter-spacing:.04em}
+.evt-prob{color:var(--red);font-size:10px;font-weight:800}
+.evt-boost{color:var(--blue);font-size:10px;font-weight:800}
+.laps-wrap{max-height:380px;overflow-y:auto;border:1px solid var(--bo);border-radius:var(--r2)}
+.wsegs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:6px}
+.wseg{background:var(--bg2);border-radius:var(--r2);padding:8px;text-align:center;border:1px solid var(--bo)}
+.wsl{font-size:9px;color:var(--tx2);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.wst{font-size:12px;font-weight:700;color:var(--tx)}
+.wsh{font-size:10px;color:var(--tx2)}
+.fin-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--bo);font-size:11px}
+.fin-row:last-child{border-bottom:none}
+.fin-i{color:var(--green);font-weight:700}
+.fin-c{color:var(--red);font-weight:700}
+.nf{color:var(--tx3);font-style:italic;font-size:11px}
+.chart-wrap{height:140px;position:relative;background:var(--bg2);border-radius:var(--r2);overflow:hidden;border:1px solid var(--bo);margin-bottom:10px}
+.utab{padding:8px 16px;font-size:11px;font-weight:800;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;letter-spacing:.05em;text-transform:uppercase;transition:all .15s}
+.utab:hover{color:var(--tx)}
+.utab.active{color:var(--red);border-bottom-color:var(--red)}
+.ccard2{background:var(--card);border:1px solid var(--bo);border-radius:var(--r2);padding:10px 12px;cursor:pointer;transition:all .15s;position:relative}
+.ccard2:hover{border-color:var(--red);background:var(--red2);transform:translateY(-1px)}
+.ccard2.active{border-color:var(--red);background:var(--red2);box-shadow:0 0 0 2px rgba(192,57,43,.15)}
+.ccard2-flag{font-size:18px;margin-bottom:4px}
+.ccard2-name{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccard2-country{font-size:10px;color:var(--tx2)}
+.ccard2-count{position:absolute;top:8px;right:8px;background:var(--thdr);color:#8899bb;border-radius:20px;padding:1px 7px;font-size:9px;font-weight:700}
+.ccard2-best{font-size:10px;color:var(--green);font-weight:700;margin-top:4px}
+.expand-row td{background:#f0f4ff!important;border-top:none!important}
+.expand-panel{padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.ep-sec{background:#fff;border:1px solid var(--bo);border-radius:var(--r2);padding:10px}
+.ep-hdr{font-size:9px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--bo)}
+.ep-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--bo);font-size:11px}
+.ep-row:last-child{border-bottom:none}
+.ep-lbl{color:var(--tx2)}
+.ep-val{font-weight:700;color:var(--tx)}
+.skill-bar{height:5px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-top:2px}
+.skill-bar-f{height:100%;border-radius:2px;background:var(--red)}
+.open-det-btn{padding:4px 10px;border-radius:4px;font-size:10px;font-weight:800;cursor:pointer;border:1px solid var(--red);background:transparent;color:var(--red);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;transition:all .15s}
+.open-det-btn:hover{background:var(--red);color:#fff}
+@keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(39,174,96,.5)}50%{box-shadow:0 0 0 8px rgba(39,174,96,0)}}
+@keyframes shimmer{0%{left:-100%}60%,100%{left:150%}}
+#btn-goto-search::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:rgba(255,255,255,.2);transform:skewX(-20deg);animation:shimmer 1.8s ease-in-out infinite}
+.compare-wrap{background:var(--card);border:1px solid var(--bo);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.compare-head{background:var(--thdr);padding:12px 16px;display:grid;grid-template-columns:140px 1fr 1fr;gap:0;align-items:center}
+.ch-label{font-size:9px;font-weight:800;color:#8899bb;text-transform:uppercase;letter-spacing:.1em}
+.ch-game{text-align:center;padding:0 8px;border-left:1px solid rgba(255,255,255,.08)}
+.crow{display:grid;grid-template-columns:140px 1fr 1fr;border-bottom:1px solid var(--bo);align-items:center}
+.crow:last-child{border-bottom:none}
+.crow:nth-child(even){background:var(--bg2)}
+.crow-label{padding:7px 12px;font-size:9px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}
+.crow-lbl{padding:6px 10px;font-size:9px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;width:130px;min-width:110px;white-space:nowrap}
+.crow-val{padding:6px 8px;text-align:center;font-size:12px;font-weight:700;color:var(--tx);border-left:1px solid var(--bo);min-width:110px}
+.crow-val.better{color:var(--green);background:rgba(39,174,96,.05)}
+.crow-val.worse{color:var(--red);background:rgba(192,57,43,.05)}
+.crow-val.equal{color:var(--tx2)}
+.csec-hdr{background:var(--thdr);color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:6px 10px}
+@media(max-width:640px){.fg4{grid-template-columns:1fr 1fr}.cgrid{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.mg{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">GPRO <span>Race Database</span> <span style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,.7);margin-left:4px;letter-spacing:.04em">v1.0</span></div>
+  <div class="tnav">
+    <div class="np active" id="nav-upload" onclick="go('upload')" data-en="Upload" data-it="Carica">Upload</div>
+    <div class="np" id="nav-search" onclick="go('search')" data-en="Search" data-it="Cerca">Search</div>
+    <div class="np" id="nav-circuits" onclick="go('circuits')" data-en="Circuits" data-it="Circuiti">Circuits</div>
+    <div class="np" id="nav-compare" onclick="openCompare()" style="display:none" data-en="Compare" data-it="Confronta">Compare</div>
+    <button id="btn-clear" onclick="clearDatabase()" class="clrdb" style="display:none" data-en="🗑 Clear DB" data-it="🗑 Cancella DB">🗑 Clear DB</button>
+    <button class="lb active" id="lb-en" onclick="setLang('en')">🇬🇧</button>
+    <button class="lb" id="lb-it" onclick="setLang('it')">🇮🇹</button>
+  </div>
+</div>
+
+<!-- ═══════════════ COMPARE BAR ═══════════════ -->
+<div id="cbar" style="display:none;background:#0f1a30;border-top:1px solid rgba(255,255,255,.08);padding:8px 16px;align-items:center;gap:6px;flex-wrap:wrap">
+  <span style="font-size:9px;font-weight:800;color:#8899bb;text-transform:uppercase;letter-spacing:.1em;white-space:nowrap">Compare</span>
+  <div id="cslot0" style="display:flex;align-items:center;gap:5px;border:1px dashed rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;font-size:10px;color:#8899bb;min-width:140px;font-style:italic">Slot 1</div>
+  <span style="color:#8899bb;font-size:11px;font-weight:700">·</span>
+  <div id="cslot1" style="display:flex;align-items:center;gap:5px;border:1px dashed rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;font-size:10px;color:#8899bb;min-width:140px;font-style:italic">Slot 2</div>
+  <span style="color:#8899bb;font-size:11px;font-weight:700">·</span>
+  <div id="cslot2" style="display:flex;align-items:center;gap:5px;border:1px dashed rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;font-size:10px;color:#8899bb;min-width:140px;font-style:italic">Slot 3</div>
+  <span style="color:#8899bb;font-size:11px;font-weight:700">·</span>
+  <div id="cslot3" style="display:flex;align-items:center;gap:5px;border:1px dashed rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;font-size:10px;color:#8899bb;min-width:140px;font-style:italic">Slot 4</div>
+  <span style="color:#8899bb;font-size:11px;font-weight:700">·</span>
+  <div id="cslot4" style="display:flex;align-items:center;gap:5px;border:1px dashed rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;font-size:10px;color:#8899bb;min-width:140px;font-style:italic">Slot 5</div>
+  <button id="cbtn-go" onclick="openCompare()" disabled style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:none;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;background:#2a3550;color:#8899bb">⚡ Compare →</button>
+  <button onclick="clearCompare()" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.05em;text-transform:uppercase;background:transparent;color:#8899bb;border:1px solid rgba(255,255,255,.1)">Clear</button>
+</div>
+
+<!-- ═══════════════ UPLOAD ═══════════════ -->
+<div id="screen-upload" class="screen active">
+<div class="page">
+  <div class="page-hdr" data-en="Upload race data" data-it="Carica dati di gara">Upload race data</div>
+  <div class="psub" style="font-size:11px;color:var(--tx2);margin-bottom:16px" data-en="Drag and drop your CSV exported from Google Sheets, or click to browse." data-it="Trascina il CSV esportato da Google Sheets, o clicca per sfogliare.">Drag and drop your CSV exported from Google Sheets, or click to browse.</div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--bo);margin-bottom:14px">
+      <div class="utab active" id="utab-local" onclick="switchUpTab('local')" data-en="📂 Local file" data-it="📂 File locale">📂 Local file</div>
+      <div class="utab" id="utab-remote" onclick="switchUpTab('remote')" data-en="🌐 Remote URL" data-it="🌐 URL remoto">🌐 Remote URL</div>
+    </div>
+
+    <div id="upanel-local">
+      <div class="uzone" id="dropzone" onclick="document.getElementById('fi').click()">
+        <input type="file" id="fi" accept=".csv" style="display:none">
+        <div class="uico">📂</div>
+        <div class="utit" id="utit" data-en="Drop your CSV file here" data-it="Trascina il file CSV qui">Drop your CSV file here</div>
+        <div class="usub" data-en="GPRO API Tool · Google Sheets export" data-it="GPRO API Tool · Export da Google Sheets">GPRO API Tool · Google Sheets export</div>
+      </div>
+      <div class="nbox" id="nbox" style="display:none">
+        <div class="nlbl" data-en="Manager name" data-it="Nome manager">Manager name</div>
+        <input class="ninp" id="mname" type="text" oninput="checkName()">
+        <div class="nwarn" id="nwarn" style="display:none">
+          <span id="nwarn-txt"></span>
+          <button class="wbtn" onclick="useSugg()" data-en="Use suggested" data-it="Usa suggerito">Use suggested</button>
+          <button class="wbtn" onclick="keepMine()" data-en="Keep mine" data-it="Tieni il mio">Keep mine</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-g" onclick="clearUp()" data-en="Clear" data-it="Pulisci">Clear</button>
+        <button class="btn btn-p" id="btn-imp" disabled onclick="doImport()" data-en="Import" data-it="Importa">Import</button>
+        <button id="btn-goto-search" onclick="go('search')" style="display:none;padding:9px 22px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;border:2px solid #27ae60;background:#27ae60;color:#fff;letter-spacing:.06em;text-transform:uppercase;align-items:center;gap:8px;animation:pulse-green 1.8s ease-in-out infinite;position:relative;overflow:hidden" data-en="Go to Search →" data-it="Vai alla Ricerca →">Go to Search →</button>
+      </div>
+    </div>
+
+    <div id="upanel-remote" style="display:none">
+      <div style="background:var(--bg2);border:1px solid var(--bo);border-radius:var(--r2);padding:16px;margin-bottom:12px">
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:10px;line-height:1.6" id="remote-desc">Paste the Google Apps Script Web App URL to automatically import all sheets from your Google Sheets file.</div>
+        <div class="nlbl" style="margin-bottom:5px" data-en="Google Apps Script URL" data-it="URL Google Apps Script">Google Apps Script URL</div>
+        <input class="ninp" id="remote-url" type="text" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:0">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;justify-content:flex-end;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-g" onclick="clearRemote()" data-en="Clear" data-it="Pulisci">Clear</button>
+        <button class="btn btn-p" onclick="doRemoteImport()" data-en="🌐 Fetch & Import" data-it="🌐 Scarica e Importa">🌐 Fetch & Import</button>
+        <button id="btn-goto-search2" onclick="go('search')" style="display:none;padding:9px 22px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;border:2px solid #27ae60;background:#27ae60;color:#fff;letter-spacing:.06em;text-transform:uppercase;align-items:center;gap:8px;animation:pulse-green 1.8s ease-in-out infinite;position:relative;overflow:hidden" data-en="Go to Search →" data-it="Vai alla Ricerca →">Go to Search →</button>
+      </div>
+    </div>
+
+    <div class="plog" id="plog"></div>
+    <div class="pbar-wrap" id="pbar-wrap">
+      <div class="pbar"><div class="pbf" id="pbf" style="width:0%"></div></div>
+      <div style="font-size:11px;color:var(--tx2);text-align:right;margin-top:3px" id="pstat"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="shdr" data-en="Database status" data-it="Stato database">Database status</div>
+    <div id="db-status" style="font-size:12px;color:var(--tx2)">No data loaded yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ SEARCH ═══════════════ -->
+<div id="screen-search" class="screen">
+<div class="page">
+  <div class="page-hdr" data-en="Search" data-it="Cerca">Search</div>
+  <div class="psub" style="font-size:11px;color:var(--tx2);margin-bottom:16px" data-en="Filter race data from the loaded database." data-it="Filtra i dati di gara dal database caricato.">Filter race data from the loaded database.</div>
+
+  <div class="card">
+    <div class="shdr" data-en="Main filters" data-it="Filtri principali">Main filters</div>
+    <div class="fg4">
+      <div class="fb"><span class="flbl" data-en="Manager" data-it="Manager">Manager</span><select id="f-mgr"><option value="">ALL</option></select></div>
+      <div class="fb"><span class="flbl" data-en="Track" data-it="Circuito">Track</span><select id="f-trk"><option value="">ALL</option></select></div>
+      <div class="fb"><span class="flbl" data-en="Season" data-it="Stagione">Season</span><select id="f-sea"><option value="">ALL</option></select></div>
+      <div class="fb"><span class="flbl" data-en="Race" data-it="Gara">Race</span><select id="f-rac"><option value="">ALL</option></select></div>
+    </div>
+    <div class="fg2">
+      <div class="fb"><span class="flbl" data-en="Tyre supplier" data-it="Fornitore gomme">Tyre supplier</span><select id="f-sup"><option value="">ALL</option></select></div>
+      <div class="fb"><span class="flbl" data-en="Tyre compound" data-it="Mescola">Tyre compound</span><select id="f-cmp"><option value="">ALL</option></select></div>
+    </div>
+    <div class="shdr" data-en="Conditions" data-it="Condizioni">Conditions</div>
+    <div class="cgrid" id="cgrid"></div>
+    <div class="arow">
+      <button class="btn btn-g" onclick="resetF()" data-en="Reset" data-it="Azzera">Reset</button>
+      <button class="btn btn-p" onclick="doSearch()" data-en="Search" data-it="Cerca">Search</button>
+    </div>
+  </div>
+
+  <div id="res-area"><div class="res-empty" data-en="Set filters and press Search." data-it="Imposta i filtri e premi Cerca.">Set filters and press Search.</div></div>
+</div>
+</div>
+
+<!-- ═══════════════ CIRCUITS ═══════════════ -->
+<div id="screen-circuits" class="screen">
+<div class="page">
+  <div class="page-hdr" id="circuits-hdr">Circuits</div>
+  <div id="circuits-grid" class="cgrid2" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:16px"></div>
+  <div id="circuit-detail" style="display:none">
+    <div id="circuit-detail-head" style="background:var(--thdr);border-radius:var(--r) var(--r) 0 0;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"></div>
+    <div id="circuit-mini-chart" style="background:#1a2540;border-left:1px solid #1e2d4a;border-right:1px solid #1e2d4a;padding:8px 18px 10px">
+      <div style="font-size:9px;font-weight:800;color:#8899bb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Position history</div>
+      <canvas id="circuit-pos-canvas" style="display:block;width:100%;height:55px"></canvas>
+    </div>
+    <div style="background:#fff;border:1px solid var(--bo);border-top:none;border-radius:0 0 var(--r) var(--r);overflow-x:auto;margin-bottom:14px">
+      <table class="rtbl" style="min-width:900px" id="circuit-tbl">
+        <thead><tr id="circuit-tbl-head"></tr></thead>
+        <tbody id="circuit-tbl-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ COMPARE ═══════════════ -->
+<div id="screen-compare" class="screen">
+<div class="page">
+  <div class="dback" onclick="goBack()">← <span data-en="Back" data-it="Indietro">Back</span></div>
+  <div id="compare-content"></div>
+</div>
+</div>
+
+<!-- ═══════════════ DETAIL ═══════════════ -->
+<div id="screen-detail" class="screen">
+<div class="page">
+  <div class="dback" onclick="goBack()" id="det-back">← <span data-en="Back" data-it="Indietro">Back</span></div>
+  <div id="det-content"></div>
+</div>
+</div>
+
+<script>
+// ── GLOBALS ──
+let DB = {records:[], managers:[]};
+let currentRecord = null;
+let LANG = 'en';
+let sugName = null;
+
+// ── TRANSLATIONS ──
+const T = {
+  en:{nodata:'No data loaded yet.',setfilt:'Set filters and press Search.',nores:'No records match the selected filters.',loading:'Searching…',found:'records found',clickrow:'Click a row to view details',importing:'Parsing…',merging:'Merging…',done:'Done!',err:'Error',notset:'NOT SET'},
+  it:{nodata:'Nessun dato caricato.',setfilt:'Imposta i filtri e premi Cerca.',nores:'Nessun record corrisponde ai filtri.',loading:'Ricerca…',found:'risultati trovati',clickrow:'Clicca su una riga per i dettagli',importing:'Analisi…',merging:'Unione…',done:'Fatto!',err:'Errore',notset:'NON IMPOSTATO'}
+};
+
+function t(k){return T[LANG][k]||k;}
+function setLang(l){
+  LANG=l;
+  document.getElementById('lb-en').classList.toggle('active',l==='en');
+  document.getElementById('lb-it').classList.toggle('active',l==='it');
+  document.querySelectorAll('[data-'+l+']').forEach(el=>{const v=el.getAttribute('data-'+l);if(v&&el.tagName!=='INPUT'&&el.tagName!=='SELECT')el.textContent=v;});
+  buildConds();
+  updateDbStatus();
+}
+
+// ── NAVIGATION ──
+function go(name, param){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.np').forEach(p=>p.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  const n=document.getElementById('nav-'+name);
+  if(n)n.classList.add('active');
+  if(name==='circuits'){renderCircuitsPage(param||null);}
+}
+
+// ── LEVENSHTEIN ──
+function lev(a,b){a=a.toLowerCase();b=b.toLowerCase();if(a.length<b.length){let t=a;a=b;b=t;}let p=[...Array(b.length+1).keys()];for(let i=0;i<a.length;i++){let c=[i+1];for(let j=0;j<b.length;j++)c.push(Math.min(p[j+1]+1,c[j]+1,p[j]+(a[i]===b[j]?0:1)));p=c;}return p[p.length-1];}
+function findSim(name,list,thr=3){let best=null,bd=thr+1;for(const n of list){const d=lev(name,n);if(d<=thr&&d<bd){best=n;bd=d;}}return best;}
+
+// ── NORMALIZERS ──
+const TYMAP={'extra morbide':'Extra Soft','morbide':'Soft','medie':'Medium','dure':'Hard','intermedie':'Intermediate','bagnato':'Wet','pioggia':'Wet','extra soft':'Extra Soft','soft':'Soft','medium':'Medium','hard':'Hard','wet':'Wet','intermediate':'Intermediate'};
+const WMAP={'soleggiato':'Sunny','sunny':'Sunny','parzialmente nuvoloso':'Partly Cloudy','partly cloudy':'Partly Cloudy','partially cloudy':'Partly Cloudy','nuvoloso':'Cloudy','cloudy':'Cloudy','molto nuvoloso':'Very Cloudy','very cloudy':'Very Cloudy','pioggia':'Rain','rain':'Rain','temporale':'Storm'};
+const RMAP={'spingi la macchina al limite':'Push to the limit','spingi molto la macchina':'Push hard','spingi poco la macchina':'Push a little','non spingere':'Do not push','sorpassa se possibile':'Overtake if possible','evita guai':'Avoid trouble','push to the limit':'Push to the limit','push hard':'Push hard','push a little':'Push a little','overtake if possible':'Overtake if possible','avoid trouble':'Avoid trouble','force him forward as much as possible':'Force him forward'};
+function ns(v){if(v===null||v===undefined)return null;const s=String(v).trim();return(s===''||s==='nan'||s==='#VALUE!')?null:s.replace(/&#(\d+);/g,(_,c)=>String.fromCharCode(c)).replace(/&amp;/g,'&');}
+function ti(v){const s=ns(v);if(!s)return null;const n=parseInt(s);return isNaN(n)?null:n;}
+function tf(v){const s=ns(v);if(!s)return null;const n=parseFloat(s.replace(',','.'));return isNaN(n)?null:n;}
+function nt(v){const s=ns(v);if(!s)return null;return TYMAP[s.toLowerCase()]||s;}
+function nw(v){const s=ns(v);if(!s)return null;return WMAP[s.toLowerCase()]||s;}
+function nr(v){const s=ns(v);if(!s)return null;return RMAP[s.toLowerCase()]||s;}
+function parseEv(v){const s=ns(v);if(!s)return[];const r=[];for(const m of s.matchAll(/event=([^,}]+)/g)){const e=m[1].trim();if(e&&e!=='eventColor')r.push(e);}return r;}
+
+// ── CSV PARSER ──
+function parseCSV(text,mgrName){
+  const rows=text.split('\n').map(r=>{const cols=[];let cur='',inQ=false;for(let i=0;i<r.length;i++){const c=r[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){cols.push(cur.trim());cur='';}else{cur+=c;}}cols.push(cur.trim());return cols;});
+  const recs=[];
+  const hi=[];
+  // Detect offset and normalize: if STAGIONI is in col[0], prepend '-' to all rows
+  var needsNorm=false;
+  for(let i=0;i<rows.length;i++){
+    if(rows[i][1]==='STAGIONI'){hi.push(i);}
+    else if(rows[i][0]==='STAGIONI'){hi.push(i);needsNorm=true;}
+  }
+  // Normalize: prepend empty col so all rows start at col[0]='-'
+  var normRows=needsNorm?rows.map(function(r){return [''].concat(r);}):rows;
+  // Reparse hi with normalized rows (only needed if mixed, but safe)
+  for(let bi=0;bi<hi.length;bi++){
+    const st=hi[bi],en=bi+1<hi.length?hi[bi+1]:normRows.length;
+    const R=rel=>normRows[st+rel+(needsNorm?0:0)]||[];
+    try{
+      const r0=R(0);
+      const rec={};
+      rec.meta={season:ti(r0[2]),race:ti(r0[4]),track:ns(r0[5]),group:ns(r0[6]),manager:mgrName,timestamp:new Date().toISOString()};
+      // Practice
+      const pl=[];
+      for(let r=3;r<12;r++){const row=R(r);if(!ns(row[1])||isNaN(parseInt(row[1])))break;const su={fWing:ti(row[6]),rWing:ti(row[7]),engine:ti(row[8]),brakes:ti(row[9]),gearbox:ti(row[10]),susp:ti(row[11])};if(Object.values(su).some(v=>v!==null))pl.push({idx:ti(row[1]),tyres:nt(row[2]),time:ns(row[3]),net:ns(row[4]),error:tf(row[5]),setup:su});}
+      rec.practice=pl;
+      // Qualify + car parts
+      const rq1=R(13),rq2=R(14),rpart=R(15);
+      const pn=['chassis','engine','fWing','rWing','underbody','sidepods','cooling','gearbox','brakes','susp','electronics'];
+      const lvl={},wp={},wpo={};
+      pn.forEach((n,i)=>{lvl[n]=ti(rq1[8+i]);wp[n]=ti(rq2[8+i]);wpo[n]=ti(rpart[8+i]);});
+      // Setup
+      const sq1=R(18),sq2=R(19),sgp=R(20);
+      rec.setup={q1:{fWing:ti(sq1[2]),rWing:ti(sq1[3]),engine:ti(sq1[4]),brakes:ti(sq1[5]),gearbox:ti(sq1[6]),susp:ti(sq1[7]),tyres:nt(sq1[8]),risk:{overtaking:ti(sq1[12]),defending:ti(sq1[13]),clearDry:ti(sq1[14]),clearWet:ti(sq1[15]),malfunction:ti(sq1[16])}},q2:{fWing:ti(sq2[2]),rWing:ti(sq2[3]),engine:ti(sq2[4]),brakes:ti(sq2[5]),gearbox:ti(sq2[6]),susp:ti(sq2[7]),tyres:nt(sq2[8])},race:{fWing:ti(sgp[2]),rWing:ti(sgp[3]),engine:ti(sgp[4]),brakes:ti(sgp[5]),gearbox:ti(sgp[6]),susp:ti(sgp[7]),tyres:nt(sgp[8])}};
+      rec.risk={startRisk:nr(rpart[4]),overtaking:ti(sq1[12]),defending:ti(sq1[13]),clearTrackDry:ti(sq1[14]),clearTrackWet:ti(sq1[15]),malfunction:ti(sq1[16]),q1Risk:nr(rq1[4]),q2Risk:nr(rq2[4])};
+      // Energy + PHA + tyres
+      const eh=R(22),e1=R(23),e2=R(24),ep=R(25);
+      rec.qualify={q1:{time:ns(rq1[2]),pos:ti(rq1[3]),risk:nr(rq1[4]),energyFrom:ti(e1[2]),energyTo:ti(e1[3]),posAfter:ti(e1[5])},q2:{time:ns(rq2[2]),pos:ti(rq2[3]),risk:nr(rq2[4]),energyFrom:ti(e2[2]),energyTo:ti(e2[3]),posAfter:ti(e2[5])}};
+      rec.car={power:ti(e1[8]),handling:ti(e2[8]),acceleration:ti(ep[8]),tyreSupplier:{name:ns(eh[11]),dryPerf:ti(e2[10]),wetPerf:ti(e2[11]),durability:ti(e2[12]),warmup:ti(e2[13]),peakTemp:ti(e2[14])},parts:Object.fromEntries(pn.map(n=>[n,{level:lvl[n],wearStart:wp[n],wearEnd:wpo[n],wearDelta:(wpo[n]!==null&&wp[n]!==null)?wpo[n]-wp[n]:null}]))};
+      // Weather + pits
+      const mq1=R(29),mq2=R(30);
+      const segs=[[31,'0–30min'],[32,'30–60min'],[33,'60–90min'],[34,'90–120min']].map(([r,l])=>{const rw=R(r);return{label:l,temp:ns(rw[3]),hum:ns(rw[4]),rain:ns(rw[5])};});
+      rec.weather={q1:{condition:nw(mq1[2]),temp:ti(mq1[3]),hum:ti(mq1[4])},q2:{condition:nw(mq2[2]),temp:ti(mq2[3]),hum:ti(mq2[4])},raceSegments:segs};
+      const pits=[];
+      for(let r=29;r<36;r++){const rp=R(r);const pl2=ns(rp[7]);if(!pl2||isNaN(parseInt(pl2)))continue;pits.push({pit:ti(pl2),tyreEnd:ti(rp[9]),fuelEnd:ti(rp[10]),fuelRefilled:ti(rp[11]),time:tf(rp[12]),reason:ns(rp[8])});}
+      rec.pits=pits.filter(p=>p.tyreEnd!==null||p.fuelRefilled!==null);
+      // Overtakes + finish
+      const so=R(37),av=R(38);
+      rec.overtakes={attempted:ti(so[2]),successful:ti(so[3]),onYouAttempted:ti(av[2]),onYouSuccessful:ti(av[3])};
+      rec.finishStatus={tyreLeft:ti(so[7]),fuelLeft:ti(so[8]),fuelStart:ti(av[8])};
+      // Finance
+      const bl=R(40),pv=R(42),pd=R(43);
+      const fi=[];
+      for(let r=42;r<50;r++){const rr=R(r);const d=ns(rr[1]),a=ti(rr[2]),cd=ns(rr[3]),ca=ti(rr[4]);if(d&&a)fi.push({desc:d,amount:a,type:'income'});if(cd&&ca)fi.push({desc:cd,amount:ca,type:'cost'});}
+      rec.finance={totalBalance:ti(bl[2]),totalCosts:ti(bl[3]),items:fi};
+      // Driver
+      const sk=['lc','conc','tal','agr','exp','tec','sta','cha','mot','rep','wei'];
+      const preV=sk.map((_,i)=>ti(pv[7+i])),dV=sk.map((_,i)=>ti(pd[7+i]));
+      const preR=Object.fromEntries(sk.map((k,i)=>[k,preV[i]]));
+      const postR=Object.fromEntries(sk.map((k,i)=>[k,preV[i]!==null&&dV[i]!==null?preV[i]+dV[i]:null]));
+      const es=ns(bl[8]);let eFrom=null,eTo=null;
+      if(es){const ep2=es.split('-');if(ep2.length===2){eFrom=parseInt(ep2[0]);eTo=parseInt(ep2[1].replace('%',''));}}
+      const rm=ns(pv[1])?.match(/\((\d+)\)/),qm=ns(pd[1])?.match(/\((\d+)\)/);
+      rec.driver={energyRaceStart:eFrom,energyRaceEnd:eTo,energyQ1From:ti(e1[2]),energyQ1To:ti(e1[3]),energyQ2From:ti(e2[2]),energyQ2To:ti(e2[3]),preRace:preR,delta:Object.fromEntries(sk.map((k,i)=>[k,dV[i]])),postRace:postR,_postRaceDerived:true};
+      // Laps
+      const laps=[];
+      for(let r=3;r<en-st;r++){const row=normRows[st+r]||[];const gv=ns(row[20]);if(!gv||isNaN(parseFloat(gv)))continue;laps.push({idx:parseInt(gv),time:ns(row[21]),pos:ti(row[22]),tyres:nt(row[23]),weather:nw(row[24]),temp:ti(row[25]),hum:ti(row[26]),boost:ns(row[27])==='B',events:parseEv(row[28])});}
+      const vt=laps.filter(l=>l.time&&l.time!=='-'&&/\d+:\d+\.\d+/.test(l.time)).map(l=>l.time);
+      const bestLap=vt.length?vt.reduce((a,b)=>a<b?a:b):null;
+      const maxLap=laps.length?Math.max(...laps.map(l=>l.idx)):null;
+      // Stints
+      const stints=[];let ss=1;
+      for(const lap of laps){if(lap.events.some(e=>e.toLowerCase().includes('pit'))){stints.push({stint:stints.length+1,lapFrom:ss,lapTo:lap.idx,laps:lap.idx-ss+1,tyres:laps[ss>0?ss-1:0]?.tyres||null});ss=lap.idx+1;}}
+      if(maxLap&&ss<=maxLap)stints.push({stint:stints.length+1,lapFrom:ss,lapTo:maxLap,laps:maxLap-ss+1,tyres:laps[laps.length-1]?.tyres||null});
+      const mistakes=laps.filter(l=>l.events.some(e=>/mistake|errore/i.test(e))).length;
+      // Summary
+      const fs=rec.finishStatus;
+      const fpl=(fs.fuelStart&&maxLap)?parseFloat(((fs.fuelStart-(fs.fuelLeft||0))/maxLap).toFixed(3)):null;
+      const tpl=(fs.tyreLeft!==null&&maxLap)?parseFloat(((100-fs.tyreLeft)/maxLap).toFixed(3)):null;
+      const rPos=rm?parseInt(rm[1]):null;
+      const qPos=qm?parseInt(qm[1]):null;
+      rec.summary={rPos,qPos,startPos:laps[0]?.pos||null,laps:maxLap,bestLap,stints:stints.length,fuelPerLap:fpl,tyrePerLap:tpl,carProblems:0,driverMistakes:mistakes,tyreCompound:laps[laps.length-1]?.tyres||null,_startPosDerived:true,_lapsDerived:true,_bestLapDerived:true,_stintsDerived:true,_tyreCompoundDerived:true,_fuelPerLapDerived:!!fpl,_tyrePerLapDerived:!!tpl};
+      rec.stints=stints;rec.laps=laps;rec.staff=null;rec.technicalDirector=null;rec.facilities=null;
+      recs.push(rec);
+    }catch(e){console.warn('Block',st,e.message);}
+  }
+  return recs;
+}
+
+// ── MERGE ──
+function merge(newRecs){
+  const ex=new Set(DB.records.map(r=>`${r.meta.manager}_${r.meta.season}_${r.meta.race}_${r.meta.track}`));
+  let added=0;
+  for(const rec of newRecs){const k=`${rec.meta.manager}_${rec.meta.season}_${rec.meta.race}_${rec.meta.track}`;if(!ex.has(k)){DB.records.push(rec);ex.add(k);added++;}}
+  const mgr=newRecs[0]?.meta.manager;
+  if(mgr&&!DB.managers.includes(mgr))DB.managers.push(mgr);
+  return added;
+}
+
+// ── LOCALSTORAGE ──
+var IDB=null;
+function openIDB(cb){
+  if(IDB){cb(IDB);return;}
+  var req=indexedDB.open('gpro_db',1);
+  req.onupgradeneeded=function(e){
+    var db=e.target.result;
+    if(!db.objectStoreNames.contains('data'))db.createObjectStore('data');
+  };
+  req.onsuccess=function(e){IDB=e.target.result;cb(IDB);};
+  req.onerror=function(){console.warn('IndexedDB open failed');cb(null);};
+}
+function saveDB(){
+  openIDB(function(db){
+    if(!db){
+      console.warn('IndexedDB not available');return;
+    }
+    var tx=db.transaction('data','readwrite');
+    var store=tx.objectStore('data');
+    store.put(JSON.stringify({managers:DB.managers,records:DB.records}),'gpro_main');
+    tx.oncomplete=function(){console.log('DB saved to IndexedDB: '+DB.records.length+' records');};
+    tx.onerror=function(e){console.warn('IndexedDB save failed:',e);};
+  });
+}
+function loadDB(){
+  openIDB(function(db){
+    if(!db){
+      // fallback to localStorage
+      try{var s=localStorage.getItem('gpro_db');if(s){var d=JSON.parse(s);DB.records=d.records||[];DB.managers=d.managers||[];populateDropdowns();updateDbStatus();}}catch(e){}
+      return;
+    }
+    var tx=db.transaction('data','readonly');
+    var store=tx.objectStore('data');
+    var req=store.get('gpro_main');
+    req.onsuccess=function(e){
+      if(e.target.result){
+        try{
+          var d=JSON.parse(e.target.result);
+          DB.records=d.records||[];
+          DB.managers=d.managers||[];
+          populateDropdowns();
+          updateDbStatus();
+          console.log('DB loaded from IndexedDB: '+DB.records.length+' records');
+        }catch(err){console.warn('IndexedDB parse failed:',err);}
+      }
+    };
+    req.onerror=function(){console.warn('IndexedDB read failed');};
+  });
+}
+function updateDbStatus(){
+  const el=document.getElementById('db-status');
+  const btn=document.getElementById('btn-clear');
+  if(!el)return;
+  if(!DB.records.length){
+    el.textContent=t('nodata');
+    if(btn)btn.style.display='none';
+    return;
+  }
+  const tracks=new Set(DB.records.map(r=>r.meta.track)).size;
+  el.innerHTML='<span style="color:var(--green);font-weight:600">✓</span> '+DB.records.length+' records · '+DB.managers.length+' manager'+(DB.managers.length!==1?'s':'')+' · '+tracks+' tracks';
+  if(btn)btn.style.display='inline-block';
+}
+
+// ── UPLOAD ──
+document.getElementById('fi').addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);});
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+
+let pendingFile=null;
+function handleFile(f){
+  pendingFile=f;
+  document.getElementById('utit').textContent='📄 '+f.name;
+  document.getElementById('nbox').style.display='block';
+  document.getElementById('btn-imp').disabled=false;
+  document.getElementById('btn-imp').textContent=LANG==='en'?'Import':'Importa';
+  document.getElementById('plog').innerHTML='';
+  document.getElementById('plog').style.display='none';
+  document.getElementById('pbar-wrap').style.display='none';
+  document.getElementById('pbf').style.width='0%';
+  document.getElementById('fi').value='';
+}
+function checkName(){
+  const name=document.getElementById('mname').value.trim();
+  const w=document.getElementById('nwarn');
+  if(!name){w.style.display='none';return;}
+  const sim=findSim(name,DB.managers);
+  if(sim&&sim.toLowerCase()!==name.toLowerCase()){
+    sugName=sim;
+    document.getElementById('nwarn-txt').textContent=`⚠️ "${name}" → Did you mean "${sim}"?`;
+    w.style.display='flex';
+  }else{w.style.display='none';sugName=null;}
+}
+function useSugg(){document.getElementById('mname').value=sugName;document.getElementById('nwarn').style.display='none';sugName=null;}
+function keepMine(){document.getElementById('nwarn').style.display='none';sugName=null;}
+function clearUp(){pendingFile=null;document.getElementById('utit').textContent=LANG==='en'?'Drop your CSV file here':'Trascina il file CSV qui';document.getElementById('nbox').style.display='none';document.getElementById('btn-imp').disabled=true;document.getElementById('btn-imp').textContent=LANG==='en'?'Import':'Importa';document.getElementById('plog').style.display='none';document.getElementById('pbar-wrap').style.display='none';document.getElementById('mname').value='';document.getElementById('fi').value='';document.getElementById('btn-goto-search').style.display='none';}
+
+function log(msg,cls=''){const el=document.getElementById('plog');el.style.display='block';el.innerHTML+=`<div class="${cls}">${msg}</div>`;el.scrollTop=el.scrollHeight;}
+function prog(pct,txt){document.getElementById('pbar-wrap').style.display='block';document.getElementById('pbf').style.width=pct+'%';document.getElementById('pstat').textContent=txt;}
+
+function doImport(){
+  if(!pendingFile)return;
+  const name=document.getElementById('mname').value.trim();
+  if(!name){openManagerModal();return;}
+  runImport(name);
+}
+function runImport(name){
+  document.getElementById('plog').innerHTML='';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    log('✓ File read OK','lok');prog(25,t('importing'));
+    setTimeout(()=>{
+      try{
+        const recs=parseCSV(e.target.result,name);
+        log(`✓ ${recs.length} race blocks parsed`,'lok');prog(65,t('merging'));
+        setTimeout(()=>{
+          const added=merge(recs);
+          saveDB();
+          populateDropdowns();
+          updateDbStatus();
+          log(`✓ ${added} new records · ${recs.length-added} skipped (duplicates)`,'lok');
+          log(`✓ DB: ${DB.records.length} total records · ${DB.managers.length} managers`,'lok');
+          prog(100,t('done'));
+          document.getElementById('btn-imp').textContent=LANG==='en'?'Imported ✓':'Importato ✓';
+          document.getElementById('btn-imp').disabled=true;
+          document.getElementById('fi').value='';
+          document.getElementById('btn-goto-search').style.display='inline-flex';
+        },200);
+      }catch(err){log('✗ '+err.message,'lwarn');prog(0,t('err'));}
+    },100);
+  };
+  reader.readAsText(pendingFile,'UTF-8');
+}
+
+// ── CONDITIONS ──
+const CF=[
+  {v:'0',en:'NOT SET',it:'NON IMPOSTATO'},
+  {v:'1',en:'Race position',it:'Pos. gara'},
+  {v:'2',en:'Qualifying position',it:'Pos. qualifica'},
+  {v:'3',en:'Driver — overall',it:'Pilota — overall'},
+  {v:'23',en:'Driver — energy',it:'Pilota — energia'},
+  {v:'4',en:'Driver — concentration',it:'Pilota — concentrazione'},
+  {v:'5',en:'Driver — talent',it:'Pilota — talento'},
+  {v:'6',en:'Driver — aggressiveness',it:'Pilota — aggressività'},
+  {v:'7',en:'Driver — experience',it:'Pilota — esperienza'},
+  {v:'8',en:'Driver — technical insight',it:'Pilota — tecnica'},
+  {v:'9',en:'Driver — stamina',it:'Pilota — resistenza'},
+  {v:'10',en:'Driver — motivation',it:'Pilota — motivazione'},
+  {v:'11',en:'Driver — weight',it:'Pilota — peso'},
+  {v:'12',en:'Car — power',it:'Auto — potenza'},
+  {v:'13',en:'Car — handling',it:'Auto — guidabilità'},
+  {v:'14',en:'Car — acceleration',it:'Auto — accelerazione'},
+  {v:'15',en:'Risk — overtake',it:'Rischio — sorpasso'},
+  {v:'16',en:'Risk — defend',it:'Rischio — difesa'},
+  {v:'17',en:'Risk — clear & dry',it:'Rischio — pista libera asciutta'},
+  {v:'18',en:'Risk — clear & wet',it:'Rischio — pista libera bagnata'},
+  {v:'19',en:'Weather — temperature',it:'Meteo — temperatura'},
+  {v:'20',en:'Weather — rain laps',it:'Meteo — giri pioggia'},
+  {v:'24',en:'Weather — Q1 temp',it:'Meteo — temp Q1'},
+  {v:'25',en:'Weather — Q1 humidity',it:'Meteo — umid Q1'},
+  {v:'26',en:'Weather — Q2 temp',it:'Meteo — temp Q2'},
+  {v:'27',en:'Weather — Q2 humidity',it:'Meteo — umid Q2'},
+  {v:'21',en:'Pits',it:'Pit stop'},
+  {v:'22',en:'Driver mistakes',it:'Errori pilota'}
+];
+const RF=['19','24','25','26','27'];
+const OPS=['=','<','>','<=','>='],OPSR=['>=','<='];
+
+function buildConds(){
+  const g=document.getElementById('cgrid');g.innerHTML='';
+  for(let i=0;i<4;i++){
+    const c=document.createElement('div');c.className='cc';c.id='cc'+i;
+    const l=document.createElement('div');l.className='cclbl';l.textContent=(LANG==='en'?'Condition':'Condizione')+' '+(i+1);
+    const s=document.createElement('select');s.id='cf'+i;
+    CF.forEach(f=>{const o=new Option(f[LANG]||f.en,f.v);s.appendChild(o);});
+    s.addEventListener('change',()=>{updateOps(i);hlCond(i);});
+    const op=document.createElement('select');op.id='co'+i;
+    OPS.forEach(o=>op.appendChild(new Option(o,o)));
+    const vi=document.createElement('input');vi.id='cv'+i;vi.type='number';vi.value='0';
+    vi.addEventListener('input',()=>hlCond(i));
+    c.append(l,s,op,vi);g.appendChild(c);
+  }
+}
+function updateOps(i){const fv=document.getElementById('cf'+i).value;const op=document.getElementById('co'+i);op.innerHTML='';(RF.includes(fv)?OPSR:OPS).forEach(o=>op.appendChild(new Option(o,o)));}
+function hlCond(i){document.getElementById('cc'+i).classList.toggle('active',document.getElementById('cf'+i).value!=='0');}
+
+// ── POPULATE DROPDOWNS ──
+const FLAGS={'Austria':'🇦🇹','Finlandia':'🇫🇮','Svezia':'🇸🇪','Stati Uniti':'🇺🇸','Germania':'🇩🇪','Azerbaigian':'🇦🇿','Spagna':'🇪🇸','Regno Unito':'🇬🇧','Brasile':'🇧🇷','Svizzera':'🇨🇭','Repubblica Ceca':'🇨🇿','Romania':'🇷🇴','Portogallo':'🇵🇹','Italia':'🇮🇹','Giappone':'🇯🇵','Croazia':'🇭🇷','Ungheria':'🇭🇺','San Marino':'🇸🇲','India':'🇮🇳','Turchia':'🇹🇷','Arabia Saudita':'🇸🇦','Danimarca':'🇩🇰','Lituania':'🇱🇹','Sudafrica':'🇿🇦','Messico':'🇲🇽','Monaco':'🇲🇨','Canada':'🇨🇦','Malaysia':'🇲🇾','Grecia':'🇬🇷','Cina':'🇨🇳','Singapore':'🇸🇬','Slovacchia':'🇸🇰','Federazione Russa':'🇷🇺','Belgio':'🇧🇪','Francia':'🇫🇷','Bahrain':'🇧🇭','Qatar':'🇶🇦','Australia':'🇦🇺','Emirati Arabi Uniti':'🇦🇪','Corea del Sud':'🇰🇷','Paesi Bassi':'🇳🇱','Argentina':'🇦🇷'};
+function getFlag(t){const m=t?.match(/\(([^)]+)\)/);return m?FLAGS[m[1]]||'🏁':'🏁';}
+function fill(id,vals,fmt){const el=document.getElementById(id);const cur=el.value;el.innerHTML='<option value="">ALL</option>';vals.forEach(v=>{const o=new Option(fmt?fmt(v):v,String(v));el.appendChild(o);});if(cur)el.value=cur;}
+function populateDropdowns(){
+  const r=DB.records;
+  fill('f-mgr',[...new Set(r.map(x=>x.meta.manager).filter(Boolean))].sort());
+  fill('f-trk',[...new Set(r.map(x=>x.meta.track).filter(Boolean))].sort(),t=>`${getFlag(t)} ${t}`);
+  fill('f-sea',[...new Set(r.map(x=>x.meta.season).filter(Boolean))].sort((a,b)=>a-b),s=>`Season ${s}`);
+  fill('f-rac',[...new Set(r.map(x=>x.meta.race).filter(Boolean))].sort((a,b)=>a-b),x=>`Race ${x}`);
+  fill('f-sup',[...new Set(r.map(x=>x.car?.tyreSupplier?.name).filter(Boolean))].sort());
+  fill('f-cmp',[...new Set(r.map(x=>x.summary?.tyreCompound).filter(Boolean))].sort());
+}
+
+// ── SEARCH ──
+function getCondVal(rec,fv){
+  switch(fv){
+    case'1':return rec.summary?.rPos;case'2':return rec.summary?.qPos;
+    case'3':return rec.driver?.preRace?.lc;case'23':return rec.driver?.energyRaceStart;
+    case'4':return rec.driver?.preRace?.conc;case'5':return rec.driver?.preRace?.tal;
+    case'6':return rec.driver?.preRace?.agr;case'7':return rec.driver?.preRace?.exp;
+    case'8':return rec.driver?.preRace?.tec;case'9':return rec.driver?.preRace?.sta;
+    case'10':return rec.driver?.preRace?.mot;case'11':return rec.driver?.preRace?.wei;
+    case'12':return rec.car?.power;case'13':return rec.car?.handling;case'14':return rec.car?.acceleration;
+    case'15':return rec.risk?.overtaking;case'16':return rec.risk?.defending;
+    case'17':return rec.risk?.clearTrackDry;case'18':return rec.risk?.clearTrackWet;
+    case'19':return rec.weather?.q1?.temp;case'24':return rec.weather?.q1?.temp;
+    case'25':return rec.weather?.q1?.hum;case'26':return rec.weather?.q2?.temp;
+    case'27':return rec.weather?.q2?.hum;case'21':return rec.pits?.length;
+    case'22':return rec.summary?.driverMistakes;default:return null;
+  }
+}
+function applyOp(v,op,tgt){if(v===null||v===undefined)return false;switch(op){case'=':return v==tgt;case'<':return v<tgt;case'>':return v>tgt;case'<=':return v<=tgt;case'>=':return v>=tgt;default:return true;}}
+function resetF(){
+  ['f-mgr','f-trk','f-sea','f-rac','f-sup','f-cmp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  for(let i=0;i<4;i++){const el=document.getElementById('cf'+i);if(el){el.value='0';updateOps(i);document.getElementById('cv'+i).value='0';hlCond(i);}}
+  document.getElementById('res-area').innerHTML=`<div class="res-empty">${t('setfilt')}</div>`;
+}
+function doSearch(){
+  if(!DB.records.length){document.getElementById('res-area').innerHTML=`<div class="res-empty">${t('nodata')}</div>`;return;}
+  const mgr=document.getElementById('f-mgr').value;
+  const trk=document.getElementById('f-trk').value;
+  const sea=document.getElementById('f-sea').value;
+  const rac=document.getElementById('f-rac').value;
+  const sup=document.getElementById('f-sup').value;
+  const cmp=document.getElementById('f-cmp').value;
+  const conds=[];
+  for(let i=0;i<4;i++){const fv=document.getElementById('cf'+i).value;if(fv!=='0')conds.push({field:fv,op:document.getElementById('co'+i).value,val:parseFloat(document.getElementById('cv'+i).value)});}
+  const res=DB.records.filter(r=>{
+    if(mgr&&r.meta.manager!==mgr)return false;
+    if(trk&&r.meta.track!==trk)return false;
+    if(sea&&r.meta.season!==parseInt(sea))return false;
+    if(rac&&r.meta.race!==parseInt(rac))return false;
+    if(sup&&r.car?.tyreSupplier?.name!==sup)return false;
+    if(cmp&&r.summary?.tyreCompound!==cmp)return false;
+    for(const c of conds){if(!applyOp(getCondVal(r,c.field),c.op,c.val))return false;}
+    return true;
+  });
+  renderResults(res);
+}
+function renderResults(recs){
+  const area=document.getElementById('res-area');
+  if(!recs.length){area.innerHTML='<div class="res-empty">'+t('nores')+'</div>';return;}
+  let rows='';
+  recs.forEach(function(r){
+    const m=r.meta,s=r.summary;
+    const ridx=DB.records.indexOf(r);
+    const qb=s&&s.qPos?'<span class="bq">Q'+s.qPos+'</span>':'—';
+    const pc=(s&&s.rPos||99)<=10?'bp':'bp-bad';
+    const pb=s&&s.rPos?'<span class="'+pc+'">P'+s.rPos+'</span>':'—';
+    const trk=m.track?m.track.replace(/\s*\([^)]+\)/,''):'—';
+    const fl=getFlag(m.track);
+    rows+='<tr data-ridx="'+ridx+'" style="cursor:pointer">';
+    rows+='<td style="font-weight:600">'+(m.manager||'—')+'</td>';
+    rows+='<td style="cursor:pointer;color:var(--red)" onclick="event.stopPropagation();go(\'circuits\',\''+r.meta.track+'\')" title="View circuit">'+fl+' '+trk+'</td>';
+    rows+='<td style="text-align:center">'+(m.season||'—')+'</td>';
+    rows+='<td style="text-align:center">'+(m.race||'—')+'</td>';
+    rows+='<td style="text-align:center">'+qb+'</td>';
+    rows+='<td style="text-align:center">'+pb+'</td>';
+    rows+='<td>'+(s&&s.tyreCompound||'—')+'</td>';
+    rows+='<td style="color:var(--tx2)">'+(s&&s.bestLap||'—')+'</td>';
+    rows+='</tr>';
+  });
+  const th=LANG==='en'?'<th>Manager</th><th>Track</th><th>S</th><th>R</th><th>Qual.</th><th>Race</th><th>Tyre</th><th>Best lap</th>':'<th>Manager</th><th>Circuito</th><th>S</th><th>G</th><th>Qual.</th><th>Gara</th><th>Gomme</th><th>Best lap</th>';
+  area.innerHTML='<div class="rwrap"><div class="rhdr"><span class="rhdr-count">'+recs.length+' '+t('found')+'</span><span class="rhdr-sub">'+t('clickrow')+'</span></div><table class="rtbl"><thead><tr>'+th+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+  area.querySelectorAll('tr[data-ridx]').forEach(function(tr){
+    var idx=parseInt(tr.getAttribute('data-ridx'));
+    tr.addEventListener('click',function(){openDetail(idx);});
+  });
+}
+
+// ── DETAIL ──
+const SCOLS=['#C0392B','#534AB7','var(--green)','var(--amber)','var(--red)','#0F6E56'];
+function wc(v){return v<30?'var(--green)':v<55?'var(--amber)':'var(--red)';}
+function pct(v,max){return Math.min(100,Math.round((v||0)/max*100));}
+function V(val,der){if(val===null||val===undefined)return'<span class="nf">—</span>';return `${val}${der?'<span class="dtag" title="Derived value">⚠</span>':''}`;}
+function Dp(d){if(d===null||d===undefined)return'<span class="dp dp-0">—</span>';if(d>0)return`<span class="dp dp-p">+${d}</span>`;if(d<0)return`<span class="dp dp-n">${d}</span>`;return'<span class="dp dp-0">0</span>';}
+function Bar(v,max,col,lbl,val){const p=pct(v||0,max);return`<div class="brow"><div class="blr"><span style="color:var(--tx2)">${lbl}</span><span style="font-weight:600">${val!==undefined?val:(v??'—')}</span></div><div class="bt"><div class="bf" style="width:${p}%;background:${col}"></div></div></div>`;}
+function WBar(pre,post){const pc2=wc(pre||0),ec=wc(post||0);return`<div class="wt"><div class="wpre" style="width:${Math.min(100,pre||0)}%;background:${pc2}"></div><div class="wpost" style="width:${Math.min(100,post||0)}%;background:${ec}"></div></div>`;}
+
+function openDetail(idx){
+  if(idx<0||idx>=DB.records.length){console.warn('openDetail: invalid idx',idx);return;}
+  const rec=DB.records[idx];
+  currentRecord=rec;
+  // Save current screen as previous for back button
+  var active=document.querySelector('.screen.active');
+  if(active&&active.id) previousScreen=active.id.replace('screen-','');
+  const m=rec.meta,s=rec.summary,d=rec.driver,car=rec.car,risk=rec.risk,qual=rec.qualify,wth=rec.weather,fin=rec.finance;
+  const pn=['chassis','engine','fWing','rWing','underbody','sidepods','cooling','gearbox','brakes','susp','electronics'];
+  const pl={'chassis':'Chassis','engine':'Engine','fWing':'Front wing','rWing':'Rear wing','underbody':'Underbody','sidepods':'Sidepods','cooling':'Cooling','gearbox':'Gearbox','brakes':'Brakes','susp':'Suspension','electronics':'Electronics'};
+  const sk=[['lc','Overall (LC)'],['conc','Concentration'],['tal','Talent'],['agr','Aggressiveness'],['exp','Experience'],['tec','Technical insight'],['sta','Stamina'],['cha','Charisma'],['mot','Motivation'],['rep','Reputation'],['wei','Weight']];
+
+  // ── SUMMARY ──
+  const SUM=`
+  <div class="mg">
+    <div class="mc"><div class="ml">Start pos.</div><div class="mv" style="color:var(--red)">${V(s?.startPos,s?._startPosDerived)}</div></div>
+    <div class="mc"><div class="ml">Qual. pos.</div><div class="mv" style="color:#8e44ad">${V(s?.qPos)}</div></div>
+    <div class="mc"><div class="ml">Race pos.</div><div class="mv" style="color:${(s?.rPos||99)<=10?'var(--green)':'var(--red)'}">${V(s?.rPos)}</div></div>
+    <div class="mc"><div class="ml">Laps</div><div class="mv">${V(s?.laps,s?._lapsDerived)}</div></div>
+    <div class="mc"><div class="ml">Best lap</div><div class="mv" style="font-size:13px">${V(s?.bestLap,s?._bestLapDerived)}</div></div>
+    <div class="mc"><div class="ml">Stints</div><div class="mv">${V(s?.stints,s?._stintsDerived)}</div></div>
+    <div class="mc"><div class="ml">Fuel/lap<span class="dtag" title="Derived">⚠</span></div><div class="mv" style="font-size:13px">${s?.fuelPerLap??'—'}</div></div>
+    <div class="mc"><div class="ml">Tyre%/lap<span class="dtag" title="Derived">⚠</span></div><div class="mv" style="font-size:13px">${s?.tyrePerLap??'—'}</div></div>
+  </div>
+  <div class="g3">
+    <div class="dc">
+      <div class="dct">${LANG==='en'?'Overtakes':'Sorpassi'}</div>
+      <div class="dr"><span class="drl">${LANG==='en'?'Attempted':'Tentati'}</span><span class="drv">${V(rec.overtakes?.attempted)}</span></div>
+      <div class="dr"><span class="drl">${LANG==='en'?'Successful':'Riusciti'}</span><span class="drv">${V(rec.overtakes?.successful)}</span></div>
+      <div class="dr"><span class="drl">${LANG==='en'?'On you (att.)':'Subiti (tent.)'}</span><span class="drv">${V(rec.overtakes?.onYouAttempted)}</span></div>
+      <div class="dr"><span class="drl">${LANG==='en'?'On you (succ.)':'Subiti (riusc.)'}</span><span class="drv">${V(rec.overtakes?.onYouSuccessful)}</span></div>
+      <div class="dr"><span class="drl">${LANG==='en'?'Driver mistakes':'Errori pilota'}</span><span class="drv">${V(s?.driverMistakes)}</span></div>
+    </div>
+    <div class="dc">
+      <div class="dct">${LANG==='en'?'Tyre supplier':'Fornitore gomme'} · ${car?.tyreSupplier?.name||'—'}</div>
+      <div class="dr"><span class="drl">Peak temp</span><span class="drv">${V(car?.tyreSupplier?.peakTemp)}°</span></div>
+      <div class="dr"><span class="drl">Dry perf</span><span class="drv">${V(car?.tyreSupplier?.dryPerf)}</span></div>
+      <div class="dr"><span class="drl">Wet perf</span><span class="drv">${V(car?.tyreSupplier?.wetPerf)}</span></div>
+      <div class="dr"><span class="drl">Durability</span><span class="drv">${V(car?.tyreSupplier?.durability)}</span></div>
+      <div class="dr"><span class="drl">Warmup</span><span class="drv">${V(car?.tyreSupplier?.warmup)}</span></div>
+    </div>
+    <div class="dc">
+      <div class="dct">${LANG==='en'?'Weather forecast':'Previsioni meteo'}</div>
+      <div class="wsegs">
+        ${(wth?.raceSegments||[]).map(sg=>`<div class="wseg"><div class="wsl">${sg.label}</div><div class="wst">${sg.temp||'—'}</div><div class="wsh">${sg.hum||'—'} · ${sg.rain||'0%'}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  ${rec.problems?.length?`<div class="dc"><div class="dct" style="color:var(--red)">⚠ Problems</div>${rec.problems.filter(Boolean).map(p=>`<div class="dr"><span class="drl">Lap ${p?.lap||'?'}</span><span class="drv" style="font-size:11px;color:var(--amber)">${p?.reason||'—'}</span></div>`).join('')}</div>`:''}`;
+
+  // ── PRACTICE ──
+  const PRAC=`
+  <div class="dc">
+    <div class="dct"><span class="stag st-p">Practice</span>${LANG==='en'?'Free practice laps':'Giri di prove libere'}</div>
+    ${rec.practice?.length?`
+    <table class="ptbl" style="margin-top:4px">
+      <thead><tr><th>#</th><th>${LANG==='en'?'Time':'Tempo'}</th><th>${LANG==='en'?'Net':'Netto'}</th><th>${LANG==='en'?'Error':'Errore'}</th><th>F.Wing</th><th>R.Wing</th><th>${LANG==='en'?'Engine':'Motore'}</th><th>${LANG==='en'?'Brakes':'Freni'}</th><th>${LANG==='en'?'Gearbox':'Cambio'}</th><th>Susp.</th><th>${LANG==='en'?'Tyres':'Gomme'}</th></tr></thead>
+      <tbody>${rec.practice.map(l=>`<tr><td style="font-weight:600">${l.idx}</td><td style="color:var(--red);font-weight:600">${l.time||'—'}</td><td style="color:var(--tx2)">${l.net||'—'}</td><td style="color:${(l.error||0)>0.5?'var(--red)':'var(--green)'}">${l.error??'—'}s</td><td>${l.setup?.fWing??'—'}</td><td>${l.setup?.rWing??'—'}</td><td>${l.setup?.engine??'—'}</td><td>${l.setup?.brakes??'—'}</td><td>${l.setup?.gearbox??'—'}</td><td>${l.setup?.susp??'—'}</td><td>${l.tyres||'—'}</td></tr>`).join('')}</tbody>
+    </table>`:`<div class="nf" style="padding:8px 0">${LANG==='en'?'No practice data in CSV.':'Nessun dato di libere nel CSV.'}</div>`}
+  </div>`;
+
+  // ── QUALIFYING ──
+  const QUAL=`
+  <div class="g2" style="margin-bottom:10px">
+    ${['q1','q2'].map((q,qi)=>{
+      const qd=qual?.[q];const su=rec.setup?.[q];
+      const tag=qi===0?'st-q1':'st-q2';const tl=q.toUpperCase();
+      return`<div class="dc"><div class="dct"><span class="stag ${tag}">${tl}</span>${qd?.time||'—'} · #${qd?.pos||'—'}</div>
+      <div class="dr"><span class="drl">Risk</span><span class="drv" style="font-size:11px">${qd?.risk||'—'}</span></div>
+      <div class="dr"><span class="drl">Energy</span><span class="drv">${qd?.energyFrom??'—'}% → ${qd?.energyTo??'—'}%</span></div>
+      <div class="dr"><span class="drl">${LANG==='en'?'Weather':'Meteo'}</span><span class="drv">${wth?.[q]?.condition||'—'} ${wth?.[q]?.temp??'—'}° ${wth?.[q]?.hum??'—'}%</span></div>
+      <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid var(--bo)">
+        <div style="font-size:10px;font-weight:700;color:var(--tx3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Setup</div>
+        ${['fWing','rWing','engine','brakes','gearbox','susp'].map(k=>`<div class="dr"><span class="drl">${pl[k]||k}</span><span class="drv">${su?.[k]??'—'}</span></div>`).join('')}
+        <div class="dr"><span class="drl">Tyres</span><span class="drv">${su?.tyres||'—'}</span></div>
+      </div></div>`;
+    }).join('')}
+  </div>`;
+
+  // ── SETUP & RISK ──
+  const SR=`
+  <div class="g2" style="margin-bottom:10px">
+    <div class="dc">
+      <div class="dct"><span class="stag st-r">Race</span>${LANG==='en'?'Race setup':'Setup gara'}</div>
+      ${['fWing','rWing','engine','brakes','gearbox','susp'].map(k=>`<div class="dr"><span class="drl">${pl[k]||k}</span><span class="drv">${rec.setup?.race?.[k]??'—'}</span></div>`).join('')}
+      <div class="dr"><span class="drl">Tyres</span><span class="drv">${rec.setup?.race?.tyres||'—'}</span></div>
+    </div>
+    <div class="dc">
+      <div class="dct">${LANG==='en'?'Boost laps':'Giri boost'}</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        ${(rec.laps||[]).filter(l=>l.boost).slice(0,3).map(l=>`<div style="background:var(--blue2);border:1px solid rgba(24,95,165,.3);border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--red)">Lap ${l.idx}</div>`).join('')||`<span class="nf">${LANG==='en'?'None':'Nessuno'}</span>`}
+      </div>
+      <div class="dct" style="margin-top:8px">Car PHA</div>
+      ${Bar(car?.power,300,'#C0392B','Power',car?.power)}
+      ${Bar(car?.handling,300,'#8e44ad','Handling',car?.handling)}
+      ${Bar(car?.acceleration,300,'#f39c12','Acceleration',car?.acceleration)}
+    </div>
+  </div>
+  <div class="dc">
+    <div class="dct">${LANG==='en'?'Race risks':'Rischi gara'}</div>
+    <div class="dr" style="margin-bottom:6px"><span class="drl">${LANG==='en'?'Start risk':'Rischio partenza'}</span><span class="drv" style="font-size:11px">${risk?.startRisk||'—'}</span></div>
+    ${[['Overtaking',risk?.overtaking],['Defending',risk?.defending],['Clear track dry',risk?.clearTrackDry],['Clear track wet',risk?.clearTrackWet],['Malfunction',risk?.malfunction]].map(([l,v])=>`<div class="brow"><div class="blr"><span style="color:var(--tx2)">${l}</span><span style="font-weight:600;color:${(v||0)>70?'var(--red)':(v||0)>40?'var(--amber)':'var(--red)'}">${v??'—'}</span></div><div class="bt"><div class="bf" style="width:${v||0}%;background:${(v||0)>70?'var(--red)':(v||0)>40?'var(--amber)':'var(--red)'}"></div></div></div>`).join('')}
+  </div>`;
+
+  // ── STINTS & PITS ──
+  const totalL=s?.laps||1;
+  const stintSegs=(rec.stints||[]).map((st,i)=>{
+    const col=SCOLS[i%SCOLS.length];
+    const isF=i===0,isL=i===(rec.stints.length-1);
+    const br=isF&&isL?'4px':isF?'4px 0 0 4px':isL?'0 4px 4px 0':'0';
+    return `<div class="sseg" style="flex:${st.laps};background:${col};border-radius:${br}"><span class="sl">S${st.stint}</span><span class="sb">${st.laps}L</span></div>`;
+  });
+  const pitMarks=(rec.pits||[]).map(()=>'<div class="pmark"></div>').join('');
+  // Build interleaved timeline
+  let timeline='';
+  if(rec.stints?.length){
+    rec.stints.forEach((st,i)=>{
+      const col=SCOLS[i%SCOLS.length];
+      const isF=i===0,isL=i===(rec.stints.length-1);
+      const br=isF&&isL?'4px':isF?'4px 0 0 4px':isL?'0 4px 4px 0':'0';
+      timeline+=`<div class="sseg" style="flex:${st.laps};background:${col};border-radius:${br}"><span class="sl">S${st.stint}</span><span class="sb">${st.laps}L</span></div>`;
+      if(i<rec.stints.length-1)timeline+='<div class="pmark"></div>';
+    });
+  }
+  const STINTS=`
+  <div style="margin:20px 0 32px">
+    <div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:18px">${LANG==='en'?'Race timeline':'Timeline gara'}</div>
+    <div class="sbar">${timeline||'<span class="nf">No laps data</span>'}</div>
+  </div>
+  <table class="ptbl" style="margin-bottom:12px">
+    <thead><tr><th>Stint</th><th>${LANG==='en'?'Laps':'Giri'}</th><th>#</th><th>${LANG==='en'?'Tyres':'Gomme'}</th></tr></thead>
+    <tbody>${(rec.stints||[]).map((st,i)=>`<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SCOLS[i%SCOLS.length]};margin-right:5px"></span>S${st.stint}</td><td>${st.lapFrom}–${st.lapTo}</td><td>${st.laps}</td><td>${st.tyres||'—'}</td></tr>`).join('')}</tbody>
+  </table>
+  <div class="dct" style="margin-bottom:8px">Pit stops</div>
+  <table class="ptbl">
+    <thead><tr><th>Pit</th><th>${LANG==='en'?'Tyre end':'Gomme fine'}</th><th>${LANG==='en'?'Fuel end':'Fuel fine'}</th><th>${LANG==='en'?'Refilled':'Rifornito'}</th><th>Time</th><th>${LANG==='en'?'Reason':'Motivo'}</th></tr></thead>
+    <tbody>${(rec.pits||[]).map(p=>`<tr><td style="font-weight:700">#${p.pit}</td><td style="color:${(p.tyreEnd||0)<20?'var(--red)':'var(--amber)'};font-weight:600">${p.tyreEnd??'—'}%</td><td>${p.fuelEnd??'—'}L</td><td>${p.fuelRefilled??'—'}L</td><td style="color:var(--green);font-weight:600">${p.time??'—'}s</td><td style="font-size:11px;color:var(--tx2)">${p.reason||'—'}</td></tr>`).join('')||`<tr><td colspan="6" style="text-align:center" class="nf">${LANG==='en'?'No pit stops':'Nessun pit stop'}</td></tr>`}</tbody>
+  </table>`;
+
+  // ── RACE LAPS ──
+  const laps=rec.laps||[];
+  const validLaps=laps.filter(l=>l.time&&l.time!=='-'&&/\d+:\d+\.\d+/.test(l.time));
+  function lapRowClass(l){if(l.events?.some(e=>/pit/i.test(e)))return'ev-pit';if(l.events?.some(e=>/problem|problema|retired|ritirato/i.test(e)))return'ev-prob';if(l.boost)return'ev-boost';return'';}
+  function lapEvtLabel(l){const evts=l.events||[];if(evts.some(e=>/pit/i.test(e)))return'<span class="evt-pit">PIT</span>';if(l.boost)return'<span class="evt-boost">BOOST</span>';if(evts.some(e=>/mistake|errore/i.test(e)))return'<span class="evt-prob">ERR</span>';if(evts.some(e=>/problem|problema/i.test(e)))return'<span class="evt-prob">PROB</span>';if(evts.some(e=>/retired|ritirato/i.test(e)))return'<span class="evt-prob">RTD</span>';return'';}
+  const LAPS=`
+  <div class="dc" style="margin-bottom:10px">
+    <div class="dct">${LANG==='en'?'Position over laps':'Posizioni per giro'}</div>
+    <div style="height:140px;position:relative;background:var(--bg2);border-radius:var(--r3);overflow:hidden;margin-top:6px" id="pos-chart-wrap">
+      <canvas id="pos-chart" style="width:100%;height:100%"></canvas>
+    </div>
+  </div>
+  <div style="display:flex;gap:14px;margin-bottom:8px;padding-left:2px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);font-weight:700"><div style="width:8px;height:8px;border-radius:50%;background:#e67e22"></div>Pit stop</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);font-weight:700"><div style="width:8px;height:8px;border-radius:50%;background:#2980b9"></div>Boost lap</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);font-weight:700"><div style="width:8px;height:8px;border-radius:50%;background:#e74c3c"></div>Problem</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);font-weight:700"><div style="width:8px;height:8px;border-radius:50%;background:#8e44ad"></div>Driver mistake</div>
+  </div>
+  <div class="laps-wrap">
+    <table class="ltbl">
+      <thead><tr><th>#</th><th>${LANG==='en'?'Time':'Tempo'}</th><th>${LANG==='en'?'Pos.':'Pos.'}</th><th>${LANG==='en'?'Tyres':'Gomme'}</th><th>${LANG==='en'?'Weather':'Meteo'}</th><th>°C</th><th>Hum</th><th>Event</th></tr></thead>
+      <tbody>${laps.map(l=>`<tr class="${lapRowClass(l)}"><td style="font-weight:600;color:var(--tx2)">${l.idx}</td><td style="font-weight:600;font-family:monospace;font-size:11px">${l.time||'—'}</td><td style="font-weight:700;color:var(--red)">${l.pos??'—'}</td><td style="font-size:11px">${l.tyres||'—'}</td><td style="font-size:11px;color:var(--tx2)">${l.weather||'—'}</td><td style="font-size:11px">${l.temp??'—'}</td><td style="font-size:11px;color:var(--tx2)">${l.hum??'—'}%</td><td>${lapEvtLabel(l)}</td></tr>`).join('')||`<tr><td colspan="8" class="nf" style="text-align:center;padding:12px">${LANG==='en'?'No lap data':'Nessun dato giri'}</td></tr>`}
+      </tbody>
+    </table>
+  </div>`;
+
+  // ── CAR ──
+  const CAR=`
+  <div class="mg" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+    <div class="mc"><div class="ml">Power</div><div class="mv" style="color:#C0392B">${car?.power??'—'}</div></div>
+    <div class="mc"><div class="ml">Handling</div><div class="mv" style="color:#27ae60">${car?.handling??'—'}</div></div>
+    <div class="mc"><div class="ml">Acceleration</div><div class="mv" style="color:#f39c12">${car?.acceleration??'—'}</div></div>
+  </div>
+  <table class="ptbl">
+    <thead><tr><th>${LANG==='en'?'Part':'Pezzo'}</th><th>Lvl</th><th>${LANG==='en'?'Wear start':'Usura inizio'}</th><th style="min-width:80px">${LANG==='en'?'Pre bar':'Barra pre'}</th><th>${LANG==='en'?'Wear end':'Usura fine'}</th><th style="min-width:80px">${LANG==='en'?'Post bar':'Barra post'}</th><th>Δ</th></tr></thead>
+    <tbody>${pn.map(n=>{const p=car?.parts?.[n];const d=p?.wearDelta;return`<tr><td style="font-weight:600">${pl[n]}</td><td style="text-align:center">${p?.level??'—'}</td><td style="font-weight:600;color:${wc(p?.wearStart||0)}">${p?.wearStart??'—'}%</td><td>${p?.wearStart!==null&&p?.wearStart!==undefined?WBar(p.wearStart,p.wearStart):''}</td><td style="font-weight:600;color:${wc(p?.wearEnd||0)}">${p?.wearEnd??'—'}%</td><td>${p?.wearEnd!==null&&p?.wearEnd!==undefined?WBar(p.wearStart||0,p.wearEnd):''}</td><td>${Dp(d)}</td></tr>`;}).join('')}</tbody>
+  </table>`;
+
+  // ── DRIVER ──
+  const DRV=`
+  <div class="dc" style="margin-bottom:10px">
+    <div class="dct">${LANG==='en'?'Energy by session':'Energia per sessione'}</div>
+    <div class="erow"><span class="elbl">Q1</span><div class="etrk"><div class="efill" style="width:${d?.energyQ1To||0}%;background:var(--red)"></div></div><span class="eval">${d?.energyQ1From??'—'}% → ${d?.energyQ1To??'—'}% <span style="color:var(--red);font-size:10px">${d?.energyQ1From&&d?.energyQ1To?'('+Math.round(d.energyQ1To-d.energyQ1From)+')':''}</span></span></div>
+    <div class="erow"><span class="elbl">Q2</span><div class="etrk"><div class="efill" style="width:${d?.energyQ2To||0}%;background:#8e44ad"></div></div><span class="eval">${d?.energyQ2From??'—'}% → ${d?.energyQ2To??'—'}% <span style="color:var(--red);font-size:10px">${d?.energyQ2From&&d?.energyQ2To?'('+Math.round(d.energyQ2To-d.energyQ2From)+')':''}</span></span></div>
+    <div class="erow"><span class="elbl">${LANG==='en'?'Race':'Gara'}</span><div class="etrk"><div class="efill" style="width:${d?.energyRaceEnd||0}%;background:var(--red)"></div></div><span class="eval">${d?.energyRaceStart??'—'}% → ${d?.energyRaceEnd??'—'}% <span style="color:var(--red);font-size:10px">${d?.energyRaceStart&&d?.energyRaceEnd?'('+Math.round(d.energyRaceEnd-d.energyRaceStart)+')':''}</span></span></div>
+  </div>
+  <table class="ptbl">
+    <thead><tr><th>Skill</th><th>Pre-race</th><th style="min-width:80px">Bar</th><th>Post-race <span class="dtag" title="Derived">⚠</span></th><th style="min-width:80px">Bar</th><th>Δ</th></tr></thead>
+    <tbody>${sk.map(([k,label])=>{const pre=d?.preRace?.[k],post=d?.postRace?.[k],delta=d?.delta?.[k];const max=k==='wei'?120:300;return`<tr><td style="font-size:12px">${label}</td><td style="font-weight:600">${pre??'—'}</td><td><div class="bt" style="height:6px"><div class="bf" style="width:${pct(pre||0,max)}%;background:var(--red)"></div></div></td><td style="font-weight:600">${post??'—'}</td><td><div class="bt" style="height:6px"><div class="bf" style="width:${pct(post||0,max)}%;background:var(--green)"></div></div></td><td>${Dp(delta)}</td></tr>`;}).join('')}</tbody>
+  </table>`;
+
+  // ── STAFF ──
+  const STAFF=`
+  <div class="g3">
+    <div class="dc"><div class="dct">Technical Director</div><div class="nf" style="padding:10px 0">${LANG==='en'?'Not in CSV — update Google Sheet script.':'Non nel CSV — aggiorna lo script Google Sheet.'}</div></div>
+    <div class="dc"><div class="dct">Staff</div><div class="nf" style="padding:10px 0">${LANG==='en'?'Not in CSV — update Google Sheet script.':'Non nel CSV — aggiorna lo script Google Sheet.'}</div></div>
+    <div class="dc"><div class="dct">Facilities</div>
+      <div class="dr"><span class="drl">${LANG==='en'?'Cost/race':'Costo/gara'}</span><span class="drv">${fin?.items?.find(i=>i.desc?.toLowerCase().includes('struttur'))?.amount?.toLocaleString()||'—'}</span></div>
+      <div class="nf" style="padding:6px 0;font-size:10px">${LANG==='en'?'Detail levels not in CSV.':'Livelli dettaglio non nel CSV.'}</div>
+    </div>
+  </div>`;
+
+  // ── FINANCE ──
+  const inc=(fin?.items||[]).filter(i=>i.type==='income');
+  const cst=(fin?.items||[]).filter(i=>i.type==='cost');
+  const FIN=`
+  <div class="mg" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+    <div class="mc"><div class="ml">${LANG==='en'?'Race earnings':'Guadagni gara'}</div><div class="mv" style="font-size:14px;color:var(--green)">+$${((fin?.totalBalance||0)/1e6).toFixed(2)}M</div></div>
+    <div class="mc"><div class="ml">${LANG==='en'?'Total costs':'Costi totali'}</div><div class="mv" style="font-size:14px;color:var(--red)">$${((fin?.totalCosts||0)/1e6).toFixed(2)}M</div></div>
+    <div class="mc"><div class="ml">Net</div><div class="mv" style="font-size:14px">${(((fin?.totalBalance||0)-(fin?.totalCosts||0))/1e6).toFixed(2)}M</div></div>
+  </div>
+  <div class="g2">
+    <div class="dc"><div class="dct" style="color:var(--green)">${LANG==='en'?'Income':'Entrate'}</div>${inc.map(i=>`<div class="fin-row"><span>${i.desc}</span><span class="fin-i">+$${i.amount.toLocaleString()}</span></div>`).join('')||`<div class="nf">${LANG==='en'?'No data':'Nessun dato'}</div>`}</div>
+    <div class="dc"><div class="dct" style="color:var(--red)">${LANG==='en'?'Costs':'Costi'}</div>${cst.map(i=>`<div class="fin-row"><span>${i.desc}</span><span class="fin-c">$${i.amount.toLocaleString()}</span></div>`).join('')||`<div class="nf">${LANG==='en'?'No data':'Nessun dato'}</div>`}</div>
+  </div>`;
+
+  // TABS LABELS
+  const tabLabels=LANG==='en'
+    ?['Summary','Practice','Qualifying','Setup & Risk','Stints & Pits','Race Laps','Car','Driver','Staff','Finance']
+    :['Sommario','Libere','Qualifiche','Setup & Rischi','Stints & Pit','Giri Gara','Auto','Pilota','Staff','Finanze'];
+  const tabIds=['sum','prac','qual','sr','stints','laps','car','drv','staff','fin'];
+  const contents=[SUM,PRAC,QUAL,SR,STINTS,LAPS,CAR,DRV,STAFF,FIN];
+
+  var isInCompare=compareSlots.some(function(sl){return sl&&DB.records.indexOf(sl)===idx;});
+  document.getElementById('det-content').innerHTML=`
+  <div class="dhead">
+    <div><div class="dname">${m.manager||'—'}</div><div class="dmeta">${getFlag(m.track)} ${m.track||'—'} · Season ${m.season||'—'} · Race ${m.race||'—'} · ${m.group||'—'}</div></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="btn-compare-det" onclick="addToCompare(${idx})" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:2px solid #C0392B;background:${isInCompare?'#C0392B':'transparent'};color:${isInCompare?'#fff':'#C0392B'};letter-spacing:.05em;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;transition:all .15s">${isInCompare?'✓ Added':'+ Compare'}</button>
+      <div class="ptags"><span class="ptag">Q${s?.qPos||'—'}</span><span class="ptag">P${s?.rPos||'—'}</span></div>
+    </div>
+  </div>
+  <div class="dtabs">${tabIds.map((id,i)=>`<div class="dtab${i===0?' active':''}" onclick="switchTab(this,'ds-${id}')">${tabLabels[i]}</div>`).join('')}</div>
+  ${tabIds.map((id,i)=>`<div id="ds-${id}" class="dsec${i===0?' active':''}">${contents[i]}</div>`).join('')}`;
+
+  go('detail');
+
+  // Draw position chart after render
+  setTimeout(()=>{
+    const canvas=document.getElementById('pos-chart');
+    if(!canvas||!validLaps.length)return;
+    const wrap=document.getElementById('pos-chart-wrap');
+    canvas.width=wrap.offsetWidth;canvas.height=wrap.offsetHeight;
+    const ctx=canvas.getContext('2d');
+    const posArr=laps.filter(l=>l.pos!==null&&l.idx>0).map(l=>({x:l.idx,y:l.pos}));
+    if(!posArr.length)return;
+    const maxPos=Math.max(...posArr.map(p=>p.y),30);
+    const minPos=1;
+    const W=canvas.width,H=canvas.height,pad=20;
+    const maxIdx=Math.max(...posArr.map(p=>p.x));
+    const cx=idx=>(idx/maxIdx)*(W-2*pad)+pad;
+    const cy=pos=>pad+(pos-minPos)/(maxPos-minPos)*(H-2*pad);
+    // grid lines
+    ctx.strokeStyle='rgba(0,0,0,0.05)';ctx.lineWidth=1;
+    [5,10,15,20,25,30].forEach(p=>{if(p<=maxPos){ctx.beginPath();ctx.moveTo(pad,cy(p));ctx.lineTo(W-pad,cy(p));ctx.stroke();}});
+    // pit lines
+    (rec.pits||[]).forEach(p=>{if(p.pit){const x=cx(p.pit);ctx.strokeStyle='rgba(162,45,45,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x,pad);ctx.lineTo(x,H-pad);ctx.stroke();ctx.setLineDash([]);}});
+    // line
+    ctx.strokeStyle='#C0392B';ctx.lineWidth=2;ctx.beginPath();
+    posArr.forEach((p,i)=>{i===0?ctx.moveTo(cx(p.x),cy(p.y)):ctx.lineTo(cx(p.x),cy(p.y));});ctx.stroke();
+    // dots for events
+    posArr.forEach(p=>{const lap=laps.find(l=>l.idx===p.x);if(lap?.events?.length||lap?.boost){ctx.fillStyle=lap.events?.some(e=>/pit/i.test(e))?'var(--amber)':lap.boost?'#C0392B':'var(--red)';ctx.beginPath();ctx.arc(cx(p.x),cy(p.y),4,0,Math.PI*2);ctx.fill();}});
+    // labels
+    ctx.fillStyle='rgba(107,114,128,0.8)';ctx.font='9px sans-serif';
+    ctx.fillText('P1',2,cy(1)+3);ctx.fillText(`P${maxPos}`,2,cy(maxPos)+3);
+  },100);
+}
+
+function switchTab(el,id){
+  document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.dsec').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(id)?.classList.add('active');
+  if(id==='ds-laps'){setTimeout(function(){drawPosChart();setupChartHover();},80);}
+}
+function drawPosChart(highlightIdx){
+  var canvas=document.getElementById('pos-chart');
+  if(!canvas||!currentRecord)return;
+  var wrap=document.getElementById('pos-chart-wrap');
+  if(!wrap)return;
+  var laps=(currentRecord.laps||[]);
+  var posArr=laps.filter(function(l){return l.pos!==null&&l.idx>0;});
+  canvas.width=wrap.offsetWidth||800;
+  canvas.height=wrap.offsetHeight||140;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!posArr.length){ctx.fillStyle='rgba(107,114,128,0.5)';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('No lap data',canvas.width/2,canvas.height/2);return;}
+  var maxPos=Math.max.apply(null,posArr.map(function(p){return p.pos;}));
+  if(maxPos<20)maxPos=20;
+  var W=canvas.width,H=canvas.height;
+  var PL=28,PR=8,PT=10,PB=22;
+  var cW=W-PL-PR,cH=H-PT-PB;
+  var maxIdx=Math.max.apply(null,posArr.map(function(p){return p.idx;}));
+  var cx=function(idx){return PL+(idx/maxIdx)*cW;};
+  var cy=function(pos){return PT+((pos-1)/(maxPos-1))*cH;};
+  var SC2=['rgba(41,128,185,.08)','rgba(142,68,173,.08)','rgba(39,174,96,.08)','rgba(230,126,34,.08)','rgba(192,57,43,.08)'];
+  (currentRecord.stints||[]).forEach(function(st,i){ctx.fillStyle=SC2[i%SC2.length];ctx.fillRect(cx(st.lapFrom),PT,cx(st.lapTo)-cx(st.lapFrom),cH);});
+  (currentRecord.pits||[]).forEach(function(p){if(p.pit){ctx.strokeStyle='rgba(230,126,34,.35)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(cx(p.pit),PT);ctx.lineTo(cx(p.pit),PT+cH);ctx.stroke();ctx.setLineDash([]);}});
+  ctx.strokeStyle='rgba(0,0,0,.05)';ctx.lineWidth=1;
+  [1,5,10,15,20,25,30].filter(function(p){return p<=maxPos;}).forEach(function(p){ctx.beginPath();ctx.moveTo(PL,cy(p));ctx.lineTo(W-PR,cy(p));ctx.stroke();ctx.fillStyle='rgba(0,0,0,.35)';ctx.font='8px sans-serif';ctx.textAlign='right';ctx.fillText('P'+p,PL-3,cy(p)+3);});
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.font='8px sans-serif';ctx.textAlign='center';
+  for(var l=0;l<=maxIdx;l+=10){ctx.fillText(l,cx(l),H-4);}
+  if(highlightIdx!==undefined){var hl=laps.find(function(l){return l.idx===highlightIdx;});if(hl){ctx.strokeStyle='rgba(100,120,160,.4)';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(cx(hl.idx),PT);ctx.lineTo(cx(hl.idx),PT+cH);ctx.stroke();ctx.beginPath();ctx.moveTo(PL,cy(hl.pos));ctx.lineTo(W-PR,cy(hl.pos));ctx.stroke();ctx.setLineDash([]);}}
+  ctx.strokeStyle='#C0392B';ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();
+  posArr.forEach(function(p,i){if(i===0)ctx.moveTo(cx(p.idx),cy(p.pos));else ctx.lineTo(cx(p.idx),cy(p.pos));});ctx.stroke();
+  posArr.forEach(function(p){
+    var lap=laps.find(function(l){return l.idx===p.idx;});
+    var col=null;
+    if(lap&&lap.events&&lap.events.some(function(e){return /pit/i.test(e);}))col='#e67e22';
+    else if(lap&&lap.boost)col='#2980b9';
+    else if(lap&&lap.events&&lap.events.some(function(e){return /problem|problema/i.test(e);}))col='#e74c3c';
+    else if(lap&&lap.events&&lap.events.some(function(e){return /mistake|errore/i.test(e);}))col='#8e44ad';
+    var isHL=(highlightIdx!==undefined&&p.idx===highlightIdx);
+    if(col||isHL){ctx.fillStyle=col||'#C0392B';ctx.strokeStyle='#fff';ctx.lineWidth=isHL?2:1.5;ctx.beginPath();ctx.arc(cx(p.idx),cy(p.pos),isHL?6:4,0,Math.PI*2);ctx.fill();ctx.stroke();}
+  });
+  canvas._cx=cx;canvas._cy=cy;canvas._laps=laps;
+}
+
+function setupChartHover(){
+  var canvas=document.getElementById('pos-chart');
+  if(!canvas)return;
+  var wrap=document.getElementById('pos-chart-wrap');
+  if(!wrap)return;
+  if(canvas._hoverSet)return;
+  canvas._hoverSet=true;
+  var tt=document.getElementById('chart-tooltip');
+  if(!tt){tt=document.createElement('div');tt.id='chart-tooltip';tt.style.cssText='position:fixed;background:#1a2540;color:#fff;border-radius:6px;padding:8px 11px;font-size:11px;pointer-events:none;z-index:99999;display:none;min-width:150px;border:1px solid #2d3d60;box-shadow:0 4px 16px rgba(0,0,0,.3)';document.body.appendChild(tt);}
+  canvas.addEventListener('mousemove',function(e){
+    if(!canvas._laps)return;
+    var rect=canvas.getBoundingClientRect();
+    var mx=e.clientX-rect.left;
+    var best=null,bd=9999;
+    canvas._laps.filter(function(l){return l.idx>0;}).forEach(function(l){var d=Math.abs(mx-canvas._cx(l.idx));if(d<bd){bd=d;best=l;}});
+    if(!best||bd>18){tt.style.display='none';drawPosChart();return;}
+    drawPosChart(best.idx);
+    var evts=best.events||[];
+    var evtHtml='';
+    if(evts.some(function(e){return /pit/i.test(e);}))evtHtml='<div style="margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;color:#e67e22">⚑ PIT STOP</div>';
+    else if(best.boost)evtHtml='<div style="margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;color:#2980b9">&#9889; BOOST LAP</div>';
+    else if(evts.some(function(e){return /problem/i.test(e);}))evtHtml='<div style="margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;color:#e74c3c">&#9888; PROBLEM</div>';
+    else if(evts.some(function(e){return /mistake/i.test(e);}))evtHtml='<div style="margin-top:5px;padding-top:4px;border-top:1px solid rgba(255,255,255,.1);font-size:10px;font-weight:800;color:#8e44ad">&#10007; DRIVER MISTAKE</div>';
+    tt.innerHTML='<div style="font-size:13px;font-weight:800;margin-bottom:5px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:4px">Lap '+best.idx+'</div>'+
+      '<div style="display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8899bb;margin-bottom:2px"><span>Position</span><span style="color:#fff;font-weight:700">P'+best.pos+'</span></div>'+
+      (best.time&&best.time!=='-'?'<div style="display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8899bb;margin-bottom:2px"><span>Lap time</span><span style="color:#fff;font-weight:700;font-family:monospace">'+best.time+'s</span></div>':'')+
+      '<div style="display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8899bb;margin-bottom:2px"><span>Tyres</span><span style="color:#fff;font-weight:700">'+(best.tyres||'--')+'</span></div>'+
+      '<div style="display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#8899bb;margin-bottom:2px"><span>Weather</span><span style="color:#fff;font-weight:700">'+(best.weather||'--')+' '+(best.temp||'--')+'° '+(best.hum||'--')+'%</span></div>'+
+      evtHtml;
+    tt.style.display='block';
+    var tx=e.clientX+14;
+    var ty=e.clientY-20;
+    var ttW=160;
+    if(tx+ttW>window.innerWidth-8)tx=e.clientX-ttW-14;
+    if(ty<8)ty=e.clientY+14;
+    tt.style.left=tx+'px';tt.style.top=ty+'px';
+  });
+  canvas.addEventListener('mouseleave',function(){
+    var tt2=document.getElementById('chart-tooltip');
+    if(tt2)tt2.style.display='none';
+    drawPosChart();
+  });
+}
+
+// ── CLEAR DATABASE ──
+function clearDatabase(){
+  if(!DB.records.length)return;
+  const n=DB.records.length;
+  const msgEN='All '+n+' records will be permanently deleted. This cannot be undone.';
+  const msgIT='Tutti i '+n+' record verranno eliminati definitivamente. Questa azione non puo essere annullata.';
+  document.getElementById('confirm-title').textContent=LANG==='en'?'Clear database':'Cancella database';
+  document.getElementById('confirm-msg').textContent=LANG==='en'?msgEN:msgIT;
+  document.getElementById('confirm-cancel').textContent=LANG==='en'?'Cancel':'Annulla';
+  document.getElementById('confirm-ok').textContent=LANG==='en'?'Delete all':'Elimina tutto';
+  document.getElementById('confirm-overlay').style.display='flex';
+}
+function closeConfirm(){
+  document.getElementById('confirm-overlay').style.display='none';
+}
+function confirmClear(){
+  closeConfirm();
+  DB={records:[],managers:[]};
+  openIDB(function(db){
+    if(db){var tx=db.transaction('data','readwrite');tx.objectStore('data').delete('gpro_main');}
+    try{localStorage.removeItem('gpro_db');}catch(e){}
+  });
+  populateDropdowns();
+  updateDbStatus();
+  document.getElementById('btn-clear').style.display='none';
+  const ra=document.getElementById('res-area');
+  if(ra)ra.innerHTML='<div class="res-empty">'+t('setfilt')+'</div>';
+}
+
+// ── COMPARE STATE ──
+var compareSlots=[null,null,null,null,null];
+
+function addToCompare(idx){
+  var rec=DB.records[idx];
+  if(!rec)return;
+  // Check if already in compare
+  for(var i=0;i<5;i++){if(compareSlots[i]&&DB.records.indexOf(compareSlots[i])===idx){alert(LANG==='en'?'Already in compare.':'Già nel confronto.');return;}}
+  // Find first empty slot
+  var slot=-1;
+  for(var i=0;i<5;i++){if(compareSlots[i]===null){slot=i;break;}}
+  if(slot===-1){alert(LANG==='en'?'All 5 compare slots are full. Remove one first.':'Tutti i 5 slot sono pieni. Rimuovi prima una gara.');return;}
+  compareSlots[slot]=rec;
+  updateCBar();
+  // Update button in detail view
+  var btn=document.getElementById('btn-compare-det');
+  if(btn){btn.textContent='✓ '+(LANG==='en'?'Added':'Aggiunto');btn.style.background='#C0392B';btn.style.color='#fff';}
+}
+
+function removeFromCompare(slot){
+  compareSlots[slot]=null;
+  // Compact slots - shift remaining slots left
+  var compact=compareSlots.filter(function(s){return s!==null;});
+  for(var i=0;i<5;i++) compareSlots[i]=compact[i]||null;
+  // Reset baseline if it's now out of range
+  var filled=compact.length;
+  if(window._compareBaseline>=filled) window._compareBaseline=0;
+  updateCBar();
+  var btn=document.getElementById('btn-compare-det');
+  if(btn){btn.textContent='+ '+(LANG==='en'?'Compare':'Confronta');btn.style.background='transparent';btn.style.color='#C0392B';}
+}
+
+function clearCompare(){
+  compareSlots=[null,null,null,null,null];
+  window._compareBaseline=0;
+  window._compareRaces=null;
+  updateCBar();
+}
+
+function updateCBar(){
+  var filled=compareSlots.filter(function(s){return s!==null;}).length;
+  var cbar=document.getElementById('cbar');
+  cbar.style.display=filled>0?'flex':'none';
+  document.getElementById('nav-compare').style.display=filled>=2?'block':'none';
+  for(var i=0;i<5;i++){
+    var sl=document.getElementById('cslot'+i);
+    if(!sl) continue;
+    var rec=compareSlots[i];
+    if(rec){
+      var flag=getFlag(rec.meta.track);
+      var trk=rec.meta.track?rec.meta.track.replace(/\s*\([^)]+\)/,''):'—';
+      var pos=rec.summary&&rec.summary.rPos?'P'+rec.summary.rPos:'—';
+      sl.style.cssText='display:flex;align-items:center;gap:5px;background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.4);border-radius:6px;padding:4px 8px;font-size:10px;color:#fff;min-width:140px;max-width:170px';
+      sl.innerHTML='<span style="font-size:12px">'+flag+'</span><div style="flex:1;min-width:0"><div style="font-size:10px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+trk+' S'+rec.meta.season+'R'+rec.meta.race+'</div><div style="font-size:9px;color:#8899bb">'+rec.meta.manager+'</div></div><span onclick="removeFromCompare('+i+')" style="font-size:11px;color:#8899bb;cursor:pointer;padding:0 2px" title="Remove">✕</span>';
+    }else{
+      sl.style.cssText='display:flex;align-items:center;gap:5px;border:1px dashed rgba(255,255,255,.1);border-radius:6px;padding:4px 8px;font-size:10px;color:#555f78;min-width:80px;font-style:italic';
+      sl.innerHTML='Slot '+(i+1);
+    }
+  }
+  var gobtn=document.getElementById('cbtn-go');
+  if(filled>=2){gobtn.disabled=false;gobtn.style.background='#C0392B';gobtn.style.color='#fff';}
+  else{gobtn.disabled=true;gobtn.style.background='#2a3550';gobtn.style.color='#8899bb';}
+  // If compare screen is already active, re-render immediately
+  var compScreen=document.getElementById('screen-compare');
+  if(compScreen&&compScreen.classList.contains('active')){
+    if(filled>=2) renderCompare();
+    else document.getElementById('compare-content').innerHTML='<div class="res-empty" style="margin-top:20px">'+(LANG==='en'?'Add at least 2 races to compare.':'Aggiungi almeno 2 gare al confronto.')+'</div>';
+  }
+}
+
+function openCompare(){
+  var filled=compareSlots.filter(function(s){return s!==null;});
+  if(filled.length<2){alert(LANG==='en'?'Add at least 2 races to compare.':'Aggiungi almeno 2 gare al confronto.');return;}
+  if(window._compareBaseline===undefined) window._compareBaseline=0;
+  renderCompare();
+  go('compare');
+}
+
+function renderCompare(){
+  var a=compareSlots[0],b=compareSlots[1];
+  var races=compareSlots.filter(function(s){return s!==null;});
+  if(races.length<2) return;
+  if(window._compareBaseline===undefined||window._compareBaseline>=races.length) window._compareBaseline=0;
+  window._compareRaces=races;
+  var N=races.length;
+
+  var pn=['chassis','engine','fWing','rWing','underbody','sidepods','cooling','gearbox','brakes','susp','electronics'];
+  var pl={chassis:'Chassis',engine:'Engine',fWing:'Front wing',rWing:'Rear wing',underbody:'Underbody',sidepods:'Sidepods',cooling:'Cooling',gearbox:'Gearbox',brakes:'Brakes',susp:'Suspension',electronics:'Electronics'};
+  var sk=[['lc','Overall (LC)'],['conc','Concentration'],['tal','Talent'],['agr','Aggressiveness'],['exp','Experience'],['tec','Technical insight'],['sta','Stamina'],['mot','Motivation'],['wei','Weight']];
+
+  // Path-based value getter
+  function gv(r,path){
+    if(!r||!path) return null;
+    var parts=path.split('.');
+    var v=r;
+    for(var i=0;i<parts.length;i++){
+      if(v===null||v===undefined) return null;
+      v=v[parts[i]];
+    }
+    return v!==undefined?v:null;
+  }
+
+  // Build a single <tr> with label + N value cells
+  function row(label, vals, lowerBetter, color){
+    var bv=parseFloat(vals[window._compareBaseline]);
+    var cells=vals.map(function(v,vi){
+      var isBase=vi===window._compareBaseline;
+      var n=parseFloat(v), bn=bv;
+      var cls='', bg='';
+      if(!isBase&&!isNaN(n)&&!isNaN(bn)&&n!==bn){
+        var better=(lowerBetter?n<bn:n>bn);
+        cls=better?'better':'worse';
+        bg=better?'rgba(39,174,96,.06)':'rgba(192,57,43,.06)';
+      } else if(!isBase&&!isNaN(n)&&!isNaN(bn)){
+        cls='equal';
+      }
+      if(isBase) bg='rgba(192,57,43,.04)';
+      var disp=(v!==null&&v!==undefined&&v!=='')?String(v):'—';
+      var delta='';
+      if(!isBase&&!isNaN(n)&&!isNaN(bn)){
+        var d=Math.round((n-bn)*1000)/1000;
+        var dc=(lowerBetter?d<0:d>0)?'#27ae60':(d===0?'#8899bb':'#C0392B');
+        delta='<div style="font-size:9px;color:'+dc+'">'+(d>0?'+':'')+d+'</div>';
+      }
+      return '<td style="padding:6px 8px;text-align:center;font-size:12px;font-weight:700;color:'+(color||'var(--tx)')+';border-left:1px solid var(--bo);background:'+bg+'">'+disp+delta+'</td>';
+    }).join('');
+    var labelStyle='padding:6px 10px;font-size:9px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;background:var(--card)';
+    return '<tr style="border-bottom:1px solid var(--bo)"><td style="'+labelStyle+'">'+label+'</td>'+cells+'</tr>';
+  }
+
+  function rowPath(label,path,lowerBetter,color){
+    var vals=races.map(function(r){var v=gv(r,path);return v!==null&&v!==undefined?v:'';});
+    return row(label,vals,lowerBetter,color);
+  }
+
+  function rowFn(label,fn,lowerBetter,color){
+    var vals=races.map(fn);
+    return row(label,vals,lowerBetter,color);
+  }
+
+  function rowBar(label,path,col,max){
+    max=max||300;
+    var vals=races.map(function(r){return gv(r,path)||0;});
+    var bv=vals[window._compareBaseline];
+    var cells=vals.map(function(v,vi){
+      var isBase=vi===window._compareBaseline;
+      var pct=Math.min(100,Math.round(v/max*100));
+      var d=v-bv;
+      var dc=d>0?'#27ae60':d<0?'#C0392B':'#8899bb';
+      var bg=isBase?'rgba(192,57,43,.04)':'';
+      return '<td style="padding:5px 8px;border-left:1px solid var(--bo);background:'+bg+'">'+
+        '<div style="display:flex;align-items:center;gap:4px">'+
+          '<div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">'+
+            '<div style="width:'+pct+'%;height:100%;background:'+col+';border-radius:3px"></div>'+
+          '</div>'+
+          '<span style="font-size:11px;font-weight:700;color:'+col+';min-width:24px;text-align:right">'+(v||'—')+'</span>'+
+        '</div>'+
+        (!isBase&&bv!==undefined?'<div style="font-size:9px;color:'+dc+';text-align:right">'+(d>0?'+':'')+d+'</div>':'')+
+      '</td>';
+    }).join('');
+    var labelStyle='padding:6px 10px;font-size:9px;font-weight:700;color:'+col+';text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;background:var(--card)';
+    return '<tr style="border-bottom:1px solid var(--bo)"><td style="'+labelStyle+'">'+label+'</td>'+cells+'</tr>';
+  }
+
+  function secRow(label){
+    return '<tr><td colspan="'+(N+1)+'" style="background:var(--thdr);color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:6px 10px">'+label+'</td></tr>';
+  }
+
+  // Build thead
+  var colW=Math.max(110, Math.min(160, Math.floor((900-130)/N)));
+  var thead='<thead><tr>'+
+    '<th style="padding:10px;text-align:left;background:#1a2540;color:#8899bb;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;width:130px;min-width:110px">Field</th>'+
+    races.map(function(r,ri){
+      var f=getFlag(r.meta.track);
+      var t=r.meta.track?(r.meta.track.replace(/\s*\([^)]+\)/,'')):'—';
+      var isBase=ri===window._compareBaseline;
+      return '<th onclick="setCmpBaseline('+ri+')" style="padding:9px 8px;text-align:center;background:'+(isBase?'#1e3a5f':'#1a2540')+';border-left:1px solid rgba(255,255,255,.08);width:'+colW+'px;min-width:'+colW+'px;vertical-align:top;cursor:pointer;'+(isBase?'border-top:3px solid #C0392B':'')+'" title="Set as baseline">'+
+        '<div style="font-size:14px">'+f+'</div>'+
+        '<div style="font-size:10px;font-weight:700;color:#fff;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+t+' S'+r.meta.season+'R'+r.meta.race+'</div>'+
+        '<div style="font-size:9px;color:#8899bb;margin-top:1px">'+r.meta.manager+'</div>'+
+        '<div style="display:flex;gap:3px;justify-content:center;margin-top:4px">'+
+        (isBase?'<span style="padding:1px 7px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(192,57,43,.4);color:#ffaaaa">BASE</span>':
+        '<span style="padding:1px 7px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(255,255,255,.12);color:#fff">Q'+(gv(r,'summary.qPos')||'—')+'</span>'+
+        '<span style="padding:1px 7px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(255,255,255,.12);color:#fff">P'+(gv(r,'summary.rPos')||'—')+'</span>')+
+        '</div></th>';
+    }).join('')+
+  '</tr></thead>';
+
+  // Build tbody
+  var tbody='<tbody>';
+
+  // Results
+  tbody+=secRow(LANG==='en'?'Results':'Risultati');
+  tbody+=rowFn(LANG==='en'?'Race pos.':'Pos. gara',function(r){var v=gv(r,'summary.rPos');return v!==null?'P'+v:'';},true);
+  tbody+=rowFn(LANG==='en'?'Qual. pos.':'Pos. qualifica',function(r){var v=gv(r,'summary.qPos');return v!==null?'Q'+v:'';},true);
+  tbody+=rowPath(LANG==='en'?'Best lap':'Best lap','summary.bestLap',true);
+  tbody+=rowPath(LANG==='en'?'Laps':'Giri','summary.laps');
+  tbody+=rowPath(LANG==='en'?'Stints':'Stints','summary.stints',true);
+  tbody+=rowPath(LANG==='en'?'Fuel/lap':'Carb./giro','summary.fuelPerLap',true);
+  tbody+=rowPath(LANG==='en'?'Tyre%/lap':'Gomme%/giro','summary.tyrePerLap',true);
+  tbody+=rowPath(LANG==='en'?'Tyre compound':'Mescola','summary.tyreCompound');
+  tbody+=rowPath(LANG==='en'?'Overtakes (succ.)':'Sorpassi (riusc.)','overtakes.successful');
+  tbody+=rowPath(LANG==='en'?'Driver mistakes':'Errori pilota','summary.driverMistakes',true);
+
+  // Setup
+  tbody+=secRow(LANG==='en'?'Race setup':'Setup gara');
+  tbody+=rowPath('Front wing','setup.race.fWing');
+  tbody+=rowPath('Rear wing','setup.race.rWing');
+  tbody+=rowPath(LANG==='en'?'Engine':'Motore','setup.race.engine');
+  tbody+=rowPath(LANG==='en'?'Brakes':'Freni','setup.race.brakes');
+  tbody+=rowPath(LANG==='en'?'Gearbox':'Cambio','setup.race.gearbox');
+  tbody+=rowPath('Suspension','setup.race.susp');
+  tbody+=rowPath(LANG==='en'?'Tyres':'Gomme','setup.race.tyres');
+
+  // Risks
+  tbody+=secRow(LANG==='en'?'Risks':'Rischi');
+  tbody+=rowPath(LANG==='en'?'Start risk':'Rischio partenza','risk.startRisk');
+  tbody+=rowPath(LANG==='en'?'Overtaking':'Sorpasso','risk.overtaking');
+  tbody+=rowPath(LANG==='en'?'Defending':'Difesa','risk.defending');
+  tbody+=rowPath(LANG==='en'?'Clear & dry':'Pista lib. asciutta','risk.clearTrackDry');
+  tbody+=rowPath(LANG==='en'?'Clear & wet':'Pista lib. bagnata','risk.clearTrackWet');
+
+  // Car PHA
+  tbody+=secRow('Car PHA');
+  tbody+=rowBar('Power','car.power','#C0392B',300);
+  tbody+=rowBar('Handling','car.handling','#27ae60',300);
+  tbody+=rowBar('Acceleration','car.acceleration','#f39c12',300);
+
+  // Car parts
+  tbody+=secRow(LANG==='en'?'Car parts — wear end':'Usura pezzi — fine gara');
+  pn.forEach(function(n){
+    tbody+=rowFn(pl[n],function(r){
+      var p=gv(r,'car.parts.'+n);
+      return p&&p.wearEnd!==null&&p.wearEnd!==undefined?p.wearEnd+'%':'';
+    },true);
+  });
+
+  // Tyre supplier
+  tbody+=secRow(LANG==='en'?'Tyre supplier':'Fornitore gomme');
+  tbody+=rowPath(LANG==='en'?'Supplier':'Fornitore','car.tyreSupplier.name');
+  tbody+=rowPath('Peak temp','car.tyreSupplier.peakTemp');
+  tbody+=rowPath('Dry perf','car.tyreSupplier.dryPerf');
+  tbody+=rowPath('Wet perf','car.tyreSupplier.wetPerf');
+
+  // Driver
+  tbody+=secRow(LANG==='en'?'Driver (pre-race)':'Pilota (pre-gara)');
+  tbody+=rowFn(LANG==='en'?'Energy race start':'Energia inizio gara',function(r){var v=gv(r,'driver.energyRaceStart');return v!==null&&v!==undefined?v+'%':'';});
+  tbody+=rowFn(LANG==='en'?'Energy race end':'Energia fine gara',function(r){var v=gv(r,'driver.energyRaceEnd');return v!==null&&v!==undefined?v+'%':'';});
+  sk.forEach(function(s){tbody+=rowPath(s[1],'driver.preRace.'+s[0]);});
+
+  // Weather
+  tbody+=secRow(LANG==='en'?'Weather Q2':'Meteo Q2');
+  tbody+=rowPath(LANG==='en'?'Condition':'Condizione','weather.q2.condition');
+  tbody+=rowPath(LANG==='en'?'Temperature':'Temperatura','weather.q2.temp');
+  tbody+=rowPath(LANG==='en'?'Humidity':'Umidita','weather.q2.hum');
+
+  // Finance
+  tbody+=secRow(LANG==='en'?'Finance':'Finanze');
+  tbody+=rowFn(LANG==='en'?'Race earnings':'Guadagni gara',function(r){var v=gv(r,'finance.totalBalance');return v?'$'+v.toLocaleString():'';});
+  tbody+=rowFn(LANG==='en'?'Total costs':'Costi totali',function(r){var v=gv(r,'finance.totalCosts');return v?'$'+v.toLocaleString():'';});
+
+  tbody+='</tbody>';
+
+  var tableWidth=130+N*colW;
+  var H='<div style="font-size:10px;color:var(--tx2);margin-bottom:8px">'+
+    (LANG==='en'?'Click column header to change baseline · Delta shown under each value':'Clicca intestazione colonna per cambiare baseline · Delta mostrato sotto ogni valore')+
+  '</div>'+
+  '<div style="overflow-x:auto;border-radius:var(--r);border:1px solid var(--bo);background:var(--card)">'+
+  '<table style="border-collapse:collapse;width:'+tableWidth+'px;table-layout:fixed">'+
+  thead+tbody+
+  '</table></div>';
+
+  document.getElementById('compare-content').innerHTML=H;
+}
+
+// ── CIRCUITS ──
+var currentCircuit = null;
+var previousScreen = 'search';
+
+function renderCircuitsPage(filterTrack){
+  var tracks = {};
+  DB.records.forEach(function(r){
+    var t = r.meta.track;
+    if(!t) return;
+    if(!tracks[t]) tracks[t] = {track:t, flag:getFlag(t), name:t.replace(/\s*\([^)]+\)/,''), country:(t.match(/\(([^)]+)\)/)||['',''])[1], records:[], bestLap:null, bestPos:null};
+    tracks[t].records.push(r);
+    var pos = r.summary&&r.summary.rPos;
+    if(pos&&(!tracks[t].bestPos||pos<tracks[t].bestPos)) tracks[t].bestPos=pos;
+    var bl = r.summary&&r.summary.bestLap;
+    if(bl&&(!tracks[t].bestLap||bl<tracks[t].bestLap)) tracks[t].bestLap=bl;
+  });
+
+  var sorted = Object.values(tracks).sort(function(a,b){return a.name.localeCompare(b.name);});
+  var hdr = document.getElementById('circuits-hdr');
+  hdr.textContent = (LANG==='en'?'Circuits — ':'Circuiti — ')+sorted.length+(LANG==='en'?' tracks in database':' circuiti nel database');
+
+  var grid = document.getElementById('circuits-grid');
+  // Store sorted tracks for click handler
+  window._sortedTracks = sorted;
+  grid.innerHTML = sorted.map(function(t, ti){
+    var active = filterTrack&&filterTrack===t.track?'active':'';
+    return '<div class="ccard2 '+active+'" onclick="selectCircuitByIdx(this,'+ti+')">' +
+      '<span class="ccard2-count">'+t.records.length+'</span>' +
+      '<div class="ccard2-flag">'+t.flag+'</div>' +
+      '<div class="ccard2-name">'+t.name+'</div>' +
+      '<div class="ccard2-country">'+t.country+'</div>' +
+      (t.bestLap?'<div class="ccard2-best">Best: '+t.bestLap+'</div>':'') +
+    '</div>';
+  }).join('');
+
+  if(filterTrack) selectCircuitByName(filterTrack);
+  else document.getElementById('circuit-detail').style.display='none';
+}
+
+function setCmpBaseline(idx){
+  window._compareBaseline=idx;
+  if(window._compareRaces) renderCompare();
+}
+
+function goBack(){
+  go(previousScreen||'search');
+  // If going back to circuits, re-scroll to detail
+  if(previousScreen==='circuits'&&currentCircuit){
+    setTimeout(function(){
+      var det=document.getElementById('circuit-detail');
+      if(det&&det.style.display!=='none') det.scrollIntoView({behavior:'smooth',block:'start'});
+    },100);
+  }
+}
+
+function goDetail(){go('detail');}
+function openCircuitDetail(idx){
+  previousScreen='circuits';
+  openDetail(idx);
+  go('detail');
+}
+
+function selectCircuitByIdx(el, idx){
+  var sorted = window._sortedTracks||[];
+  var t = sorted[idx];
+  if(!t) return;
+  selectCircuit(el, t.track);
+}
+
+function selectCircuitEl(el){
+  var b64 = el.getAttribute('data-track');
+  var track = b64 ? decodeURIComponent(escape(atob(b64))) : '';
+  selectCircuit(el, track);
+}
+
+function selectCircuit(el, track){
+  document.querySelectorAll('.ccard2').forEach(function(c){c.classList.remove('active');});
+  if(el) el.classList.add('active');
+  selectCircuitByName(track);
+  // Scroll to detail after short delay to allow render
+  setTimeout(function(){
+    var det = document.getElementById('circuit-detail');
+    if(det && det.style.display!=='none'){
+      det.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }, 80);
+}
+
+function selectCircuitByName(track){
+  currentCircuit = track;
+  var recs = DB.records.filter(function(r){return r.meta.track===track;});
+  if(!recs.length) return;
+  var det = document.getElementById('circuit-detail');
+  det.style.display='block';
+
+  // Header stats
+  var bestPos = null, bestLap = null, temps = [], laps = [];
+  recs.forEach(function(r){
+    if(r.summary&&r.summary.rPos&&(!bestPos||r.summary.rPos<bestPos)) bestPos=r.summary.rPos;
+    if(r.summary&&r.summary.bestLap&&(!bestLap||r.summary.bestLap<bestLap)) bestLap=r.summary.bestLap;
+    if(r.weather&&r.weather.q2&&r.weather.q2.temp) temps.push(r.weather.q2.temp);
+    if(r.summary&&r.summary.laps) laps.push(r.summary.laps);
+  });
+  var avgTemp = temps.length?Math.round(temps.reduce(function(a,b){return a+b;},0)/temps.length):null;
+  var avgLaps = laps.length?Math.round(laps.reduce(function(a,b){return a+b;},0)/laps.length):null;
+  var flag = getFlag(track);
+  var tname = track.replace(/\s*\([^)]+\)/,'');
+  var country = (track.match(/\(([^)]+)\)/)||['',''])[1];
+  var managers = [...new Set(recs.map(function(r){return r.meta.manager;}))];
+  var seasons = [...new Set(recs.map(function(r){return r.meta.season;}))].sort();
+
+  document.getElementById('circuit-detail-head').innerHTML =
+    '<div><div style="font-size:17px;font-weight:700;color:#fff">'+flag+' '+tname+(country?' ('+country+')':'')+'</div>' +
+    '<div style="font-size:11px;color:#8899bb;margin-top:2px">'+recs.length+' races · Season '+seasons[0]+(seasons.length>1?'–'+seasons[seasons.length-1]:'')+(managers.length>1?' · '+managers.length+' managers':' · '+managers[0])+'</div></div>' +
+    '<div style="display:flex;gap:16px">' +
+    (bestPos?'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#27ae60">P'+bestPos+'</div><div style="font-size:9px;color:#8899bb;text-transform:uppercase;letter-spacing:.06em">Best pos.</div></div>':'') +
+    (bestLap?'<div style="text-align:center"><div style="font-size:14px;font-weight:800;color:#fff">'+bestLap+'</div><div style="font-size:9px;color:#8899bb;text-transform:uppercase;letter-spacing:.06em">Best lap</div></div>':'') +
+    (avgTemp?'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#f39c12">'+avgTemp+'°</div><div style="font-size:9px;color:#8899bb;text-transform:uppercase;letter-spacing:.06em">Avg temp</div></div>':'') +
+    (avgLaps?'<div style="text-align:center"><div style="font-size:16px;font-weight:800;color:#fff">'+avgLaps+'</div><div style="font-size:9px;color:#8899bb;text-transform:uppercase;letter-spacing:.06em">Avg laps</div></div>':'') +
+    '</div>';
+
+  // Mini chart
+  drawCircuitMiniChart(recs);
+
+  // Table
+  var thead = document.getElementById('circuit-tbl-head');
+  var cols = LANG==='en'
+    ?['S','R','Manager','Qual.','Race','Best lap','Tyres','LC','Energy','Weather Q2','Temp Q2','PHA','Stints','Fuel/lap','']
+    :['S','G','Manager','Qual.','Gara','Best lap','Gomme','LC','Energia','Meteo Q2','Temp Q2','PHA','Stints','Carb./giro',''];
+  thead.innerHTML = cols.map(function(c){return '<th>'+c+'</th>';}).join('');
+
+  var tbody = document.getElementById('circuit-tbl-body');
+  var bestLapVal = bestLap;
+  tbody.innerHTML = recs.map(function(r, ri){
+    var s = r.summary||{}, d = r.driver||{}, w = r.weather||{}, car = r.car||{};
+    var isBest = s.bestLap && s.bestLap===bestLapVal;
+    var qb = s.qPos?'<span class="bq">Q'+s.qPos+'</span>':'—';
+    var pb = s.rPos?'<span class="'+(s.rPos<=10?'bp':'bp-bad')+'">P'+s.rPos+'</span>':'—';
+    var pha = '<span style="color:#C0392B;font-weight:700;font-size:10px">P</span><span style="font-size:10px">'+(car.power||'—')+'</span> '+
+              '<span style="color:#27ae60;font-weight:700;font-size:10px;margin-left:2px">H</span><span style="font-size:10px">'+(car.handling||'—')+'</span> '+
+              '<span style="color:#f39c12;font-weight:700;font-size:10px;margin-left:2px">A</span><span style="font-size:10px">'+(car.acceleration||'—')+'</span>';
+    var eSt = d.energyRaceStart!==null&&d.energyRaceStart!==undefined?d.energyRaceStart+'%':'—';
+    var eEn = d.energyRaceEnd!==null&&d.energyRaceEnd!==undefined?d.energyRaceEnd+'%':'—';
+    var ridx = DB.records.indexOf(r);
+    return '<tr class="'+(isBest?'best-row':'')+'" style="'+(isBest?'background:rgba(39,174,96,.04)':'')+'">' +
+      '<td style="font-weight:700">'+(r.meta.season||'—')+'</td>' +
+      '<td>'+(r.meta.race||'—')+'</td>' +
+      '<td style="font-weight:700">'+(r.meta.manager||'—')+'</td>' +
+      '<td>'+qb+'</td>' +
+      '<td>'+pb+'</td>' +
+      '<td style="font-family:monospace;font-size:11px;'+(isBest?'color:#27ae60;font-weight:700':'')+'">'+(s.bestLap||'—')+(isBest?' ★':'')+'</td>' +
+      '<td style="font-size:11px">'+(s.tyreCompound||'—')+'</td>' +
+      '<td style="font-weight:700">'+(d.preRace&&d.preRace.lc||'—')+'</td>' +
+      '<td style="font-size:11px"><span style="color:var(--green);font-weight:700">'+eSt+'</span><span style="color:var(--tx2)">→</span><span style="color:var(--amber);font-weight:700">'+eEn+'</span></td>' +
+      '<td style="font-size:11px">'+(w.q2&&w.q2.condition||'—')+'</td>' +
+      '<td style="font-size:11px">'+(w.q2&&w.q2.temp!==null&&w.q2.temp!==undefined?w.q2.temp+'°':'—')+'</td>' +
+      '<td>'+pha+'</td>' +
+      '<td style="text-align:center">'+(s.stints||'—')+'</td>' +
+      '<td>'+(s.fuelPerLap||'—')+'</td>' +
+      '<td><div style="display:flex;gap:5px;align-items:center">' +
+        '<button class="open-det-btn" onclick="openCircuitDetail('+ridx+')" title="Open full detail">→</button>' +
+        '<button style="padding:4px 8px;border-radius:4px;font-size:10px;font-weight:800;cursor:pointer;border:1px solid var(--bo);background:var(--bg2);color:var(--tx2);text-transform:uppercase;letter-spacing:.04em" onclick="toggleExpand(this,'+ri+')" id="exp-btn-'+ri+'">▼</button>' +
+      '</div></td>' +
+    '</tr>' +
+    '<tr class="expand-row" id="exp-row-'+ri+'" style="display:none"><td colspan="15"><div class="expand-panel">' +
+      buildSkillPanel(r) +
+      buildPartsPanel(r) +
+      buildPitsPanel(r) +
+    '</div></td></tr>';
+  }).join('');
+}
+
+function buildSkillPanel(r){
+  var d = r.driver||{};
+  var sk = [['lc','Overall (LC)'],['conc','Concentration'],['tal','Talent'],['agr','Aggressiveness'],['exp','Experience'],['tec','Technical insight'],['sta','Stamina'],['mot','Motivation'],['wei','Weight']];
+  var rows = sk.map(function(s){
+    var v = d.preRace&&d.preRace[s[0]]!==null&&d.preRace[s[0]]!==undefined?d.preRace[s[0]]:'—';
+    var delta = d.delta&&d.delta[s[0]]!==null&&d.delta[s[0]]!==undefined?d.delta[s[0]]:null;
+    var dHtml = delta!==null?'<span style="font-size:9px;margin-left:4px;color:'+(delta>0?'#27ae60':delta<0?'#C0392B':'#8899bb')+'">'+(delta>0?'+':'')+delta+'</span>':'';
+    var pct = Math.min(100,Math.round((parseInt(v)||0)/300*100));
+    return '<div class="ep-row"><span class="ep-lbl">'+s[1]+'</span><div style="text-align:right"><span class="ep-val">'+v+'</span>'+dHtml+'<div class="skill-bar" style="width:60px;display:inline-block;vertical-align:middle;margin-left:5px"><div class="skill-bar-f" style="width:'+pct+'%"></div></div></div></div>';
+  }).join('');
+  return '<div class="ep-sec"><div class="ep-hdr">'+(LANG==='en'?'Driver skills (pre-race)':'Skill pilota (pre-gara)')+'</div>'+rows+'</div>';
+}
+
+function buildPartsPanel(r){
+  var car = r.car||{};
+  var pn = ['chassis','engine','fWing','rWing','underbody','sidepods','cooling','gearbox','brakes','susp','electronics'];
+  var pl = {chassis:'Chassis',engine:'Engine',fWing:'Front wing',rWing:'Rear wing',underbody:'Underbody',sidepods:'Sidepods',cooling:'Cooling',gearbox:'Gearbox',brakes:'Brakes',susp:'Suspension',electronics:'Electronics'};
+  var rows = pn.map(function(n){
+    var p = car.parts&&car.parts[n]||{};
+    var lvl = p.level!==null&&p.level!==undefined?p.level:'—';
+    var ws = p.wearStart!==null&&p.wearStart!==undefined?p.wearStart+'%':'—';
+    var we = p.wearEnd!==null&&p.wearEnd!==undefined?p.wearEnd+'%':'—';
+    var wCol = p.wearEnd!==null&&p.wearEnd!==undefined?(p.wearEnd<30?'#27ae60':p.wearEnd<55?'#e67e22':'#C0392B'):'var(--tx)';
+    return '<div class="ep-row"><span class="ep-lbl">'+pl[n]+' <span style="color:#8899bb;font-size:9px">L'+lvl+'</span></span><span class="ep-val" style="color:'+wCol+'">'+ws+' → '+we+'</span></div>';
+  }).join('');
+  return '<div class="ep-sec"><div class="ep-hdr">'+(LANG==='en'?'Car parts (wear)':'Pezzi auto (usura)')+'</div>'+rows+'</div>';
+}
+
+function buildPitsPanel(r){
+  var pits = r.pits||[];
+  var stints = r.stints||[];
+  var rows = pits.length ? pits.map(function(p){
+    return '<div class="ep-row"><span class="ep-lbl">Pit #'+p.pit+' (Lap '+p.pit+')</span><span class="ep-val">'+
+      (p.tyreEnd!==null?p.tyreEnd+'% tyres · ':'')+
+      (p.fuelRefilled!==null?p.fuelRefilled+'L · ':'')+
+      (p.time!==null?p.time+'s':'')+
+    '</span></div>';
+  }).join('') : '<div class="ep-row"><span class="ep-lbl" style="font-style:italic;color:var(--tx3)">No pit stops</span></div>';
+  var srows = stints.map(function(st,i){
+    var cols=['#2980b9','#8e44ad','#27ae60','#e67e22','#C0392B','#16a085'];
+    return '<div class="ep-row"><span class="ep-lbl"><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'+cols[i%cols.length]+';margin-right:4px"></span>S'+st.stint+' (L'+st.lapFrom+'–'+st.lapTo+')</span><span class="ep-val">'+st.laps+' laps · '+(st.tyres||'—')+'</span></div>';
+  }).join('');
+  return '<div class="ep-sec"><div class="ep-hdr">'+(LANG==='en'?'Pit stops & stints':'Pit stop e stint')+'</div>'+rows+(srows?'<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--bo)">'+srows+'</div>':'')+'</div>';
+}
+
+function toggleExpand(btn, ri){
+  var row = document.getElementById('exp-row-'+ri);
+  if(!row) return;
+  var isOpen = row.style.display!=='none';
+  row.style.display = isOpen?'none':'table-row';
+  btn.textContent = isOpen?'▼':'▲';
+}
+
+function drawCircuitMiniChart(recs){
+  var canvas = document.getElementById('circuit-pos-canvas');
+  if(!canvas||!recs.length) return;
+  var wrap = canvas.parentElement;
+  canvas.width = wrap.offsetWidth||800;
+  canvas.height = 70;
+  var ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // Build data points - sort by season+race
+  var data = recs.filter(function(r){return r.summary&&r.summary.rPos;})
+    .sort(function(a,b){return (a.meta.season-b.meta.season)||((a.meta.race||0)-(b.meta.race||0));})
+    .map(function(r){
+      return {
+        s:r.meta.season,
+        r:r.meta.race,
+        pos:r.summary.rPos,
+        temp:(r.weather&&r.weather.q2&&r.weather.q2.temp)||null
+      };
+    });
+  if(!data.length) return;
+
+  var W=canvas.width, H=canvas.height;
+  var PL=28, PR=8, PT=8, PB=18;
+  var cW=W-PL-PR, cH=H-PT-PB;
+  var n=data.length;
+  var maxPos=Math.max.apply(null,data.map(function(d){return d.pos;}));
+  if(maxPos<15) maxPos=15;
+
+  // Temperature range
+  var temps=data.filter(function(d){return d.temp!==null;}).map(function(d){return d.temp;});
+  var minT=temps.length?Math.min.apply(null,temps):0;
+  var maxT=temps.length?Math.max.apply(null,temps):40;
+  if(maxT===minT){minT=minT-5;maxT=maxT+5;}
+
+  var cx=function(i){return PL+(i/(Math.max(n-1,1)))*cW;};
+  var cyPos=function(p){return PT+((p-1)/(maxPos-1))*cH;};
+  var cyTemp=function(t){return PT+((maxT-t)/(maxT-minT))*cH;};
+
+  // Grid lines
+  ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=1;
+  [1,5,10,15,20].filter(function(p){return p<=maxPos;}).forEach(function(p){
+    ctx.beginPath();ctx.moveTo(PL,cyPos(p));ctx.lineTo(W-PR,cyPos(p));ctx.stroke();
+  });
+
+  // Y axis labels (positions)
+  ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='7px sans-serif';ctx.textAlign='right';
+  [1,5,10].filter(function(p){return p<=maxPos;}).forEach(function(p){
+    ctx.fillText('P'+p,PL-3,cyPos(p)+3);
+  });
+
+  // Draw bars
+  var barW = Math.max(3, Math.min(18, cW/n - 2));
+  data.forEach(function(d,i){
+    var x=cx(i);
+    var y=cyPos(d.pos);
+    var barH=cH-(y-PT);
+    var col=d.pos<=3?'#27ae60':d.pos<=10?'#2980b9':d.pos<=15?'#e67e22':'#C0392B';
+    ctx.fillStyle=col;
+    ctx.fillRect(x-barW/2, y, barW, barH);
+    // X label every N bars
+    if(n<=12||i%Math.ceil(n/10)===0){
+      ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='7px sans-serif';ctx.textAlign='center';
+      ctx.fillText('S'+d.s+'R'+d.r,x,H-2);
+    }
+  });
+
+  // Draw temperature line (if data available)
+  var tempData=data.filter(function(d){return d.temp!==null;});
+  if(tempData.length>=2){
+    ctx.strokeStyle='rgba(243,156,18,.8)';
+    ctx.lineWidth=1.5;
+    ctx.setLineDash([3,2]);
+    ctx.lineJoin='round';
+    ctx.beginPath();
+    data.forEach(function(d,i){
+      if(d.temp===null) return;
+      var x=cx(i);
+      var y=cyTemp(d.temp);
+      if(i===0||data[i-1].temp===null) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Temp dots
+    data.forEach(function(d,i){
+      if(d.temp===null) return;
+      ctx.fillStyle='rgba(243,156,18,.9)';
+      ctx.beginPath();
+      ctx.arc(cx(i),cyTemp(d.temp),2.5,0,Math.PI*2);
+      ctx.fill();
+    });
+
+    // Temp axis label (right side)
+    ctx.fillStyle='rgba(243,156,18,.6)';ctx.font='7px sans-serif';ctx.textAlign='left';
+    ctx.fillText(maxT+'°',W-PR+2,PT+4);
+    ctx.fillText(minT+'°',W-PR+2,PT+cH);
+  }
+
+  // Legend
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='7px sans-serif';ctx.textAlign='left';
+  ctx.fillRect(PL,H-10,7,5);ctx.fillStyle='rgba(255,255,255,.25)';
+  // pos legend dots
+  [[3,'#27ae60','P1-3'],[5,'#2980b9','P4-10'],[8,'#e67e22','P11-15'],[11,'#C0392B','P16+']].forEach(function(l,i){
+    ctx.fillStyle=l[1];ctx.fillRect(PL+i*40,H-8,6,5);
+    ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='7px sans-serif';
+    ctx.fillText(l[2],PL+i*40+8,H-3);
+  });
+  if(tempData.length>=2){
+    ctx.strokeStyle='rgba(243,156,18,.8)';ctx.lineWidth=1.5;ctx.setLineDash([3,2]);
+    ctx.beginPath();ctx.moveTo(PL+162,H-5);ctx.lineTo(PL+170,H-5);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='7px sans-serif';
+    ctx.fillText('Temp',PL+173,H-3);
+  }
+}
+
+// ── UPLOAD TAB SWITCHING ──
+function switchUpTab(tab){
+  document.getElementById('upanel-local').style.display=tab==='local'?'block':'none';
+  document.getElementById('upanel-remote').style.display=tab==='remote'?'block':'none';
+  document.getElementById('utab-local').classList.toggle('active',tab==='local');
+  document.getElementById('utab-remote').classList.toggle('active',tab==='remote');
+}
+
+// ── REMOTE IMPORT ──
+function clearRemote(){
+  document.getElementById('remote-url').value='';
+  document.getElementById('plog').innerHTML='';
+  document.getElementById('plog').style.display='none';
+  document.getElementById('pbar-wrap').style.display='none';
+  document.getElementById('pbf').style.width='0%';
+  document.getElementById('btn-goto-search2').style.display='none';
+}
+
+function doRemoteImport(){
+  var url=document.getElementById('remote-url').value.trim();
+  if(!url){alert(LANG==='en'?'Please enter a URL.':'Inserisci un URL.');return;}
+  document.getElementById('plog').innerHTML='';
+  document.getElementById('plog').style.display='block';
+  document.getElementById('pbar-wrap').style.display='block';
+  document.getElementById('pbf').style.width='10%';
+  document.getElementById('pstat').textContent=LANG==='en'?'Connecting...':'Connessione...';
+  log(LANG==='en'?'Fetching data from URL...':'Recupero dati dall URL...','lok');
+  // Try with cors mode first, fallback message if blocked
+  fetch(url, {method:'GET', mode:'cors', credentials:'omit', redirect:'follow'})
+    .then(function(r){
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      return r.json();
+    })
+    .then(function(data){
+      document.getElementById('pbf').style.width='50%';
+      log(LANG==='en'?'Data received, parsing...':'Dati ricevuti, analisi...','lok');
+      // Expected format: {sheets: [{name: "Manager Name", csv: "...csv content..."}]}
+      var sheets=data.sheets||[];
+      if(!sheets.length)throw new Error('No sheets found in response');
+      log(LANG==='en'?sheets.length+' sheets found':''+sheets.length+' schede trovate','lok');
+      var allRecs=[];
+      sheets.forEach(function(sheet){
+        var recs=parseCSV(sheet.csv, sheet.name);
+        allRecs=allRecs.concat(recs);
+        log(LANG==='en'?'✓ '+sheet.name+': '+recs.length+' races':'✓ '+sheet.name+': '+recs.length+' gare','lok');
+      });
+      document.getElementById('pbf').style.width='80%';
+      var added=merge(allRecs);
+      saveDB();
+      populateDropdowns();
+      updateDbStatus();
+      document.getElementById('pbf').style.width='100%';
+      document.getElementById('pstat').textContent=LANG==='en'?'Done!':'Fatto!';
+      log(LANG==='en'?'✓ '+added+' new records added · '+(allRecs.length-added)+' duplicates skipped':'✓ '+added+' nuovi record · '+(allRecs.length-added)+' duplicati saltati','lok');
+      log(LANG==='en'?'✓ DB: '+DB.records.length+' total · '+DB.managers.length+' managers':'✓ DB: '+DB.records.length+' totali · '+DB.managers.length+' manager','lok');
+      document.getElementById('btn-goto-search2').style.display='inline-flex';
+    })
+    .catch(function(err){
+      var isCors=err.message.indexOf('fetch')>=0||err.message.indexOf('Failed')>=0||err.message.indexOf('NetworkError')>=0;
+      if(isCors){
+        log('✗ '+(LANG==='en'?'Connection blocked (CORS). Check GAS deployment:':'Connessione bloccata (CORS). Verifica distribuzione GAS:'),'lwarn');
+        log('  '+(LANG==='en'?'1. In App Script → Deploy → Manage deployments':'1. In App Script → Distribuisci → Gestisci distribuzioni'),'lwarn');
+        log('  '+(LANG==='en'?'2. Edit → Who has access: Anyone (anonymous)':'2. Modifica → Accesso: Chiunque (anonimo)'),'lwarn');
+        log('  '+(LANG==='en'?'3. Save and use the NEW URL generated':'3. Salva e usa il NUOVO URL generato'),'lwarn');
+      } else {
+        log('✗ Error: '+err.message,'lwarn');
+      }
+      document.getElementById('pstat').textContent=LANG==='en'?'Error':'Errore';
+      document.getElementById('pbf').style.width='0%';
+    });
+}
+
+// ── CONFIRM MODAL OVERLAY CLICK ──
+document.addEventListener('DOMContentLoaded',function(){
+  var co=document.getElementById('confirm-overlay');
+  if(co)co.addEventListener('click',function(e){if(e.target===this)closeConfirm();});
+});
+
+// ── INIT ──
+buildConds();
+loadDB();
+
+// ── MANAGER MODAL ──
+let modalSugName = null;
+
+function openManagerModal(){
+  var overlay=document.getElementById('mgr-modal-overlay');
+  var inp=document.getElementById('modal-name-inp');
+  var existing=document.getElementById('mname').value.trim();
+  inp.value=existing;
+  document.getElementById('modal-warn').style.display='none';
+  modalSugName=null;
+  attachModalListeners();
+  overlay.style.display='flex';
+  setTimeout(function(){inp.focus();},50);
+  if(LANG==='it'){
+    document.getElementById('modal-title').textContent='Nome manager obbligatorio';
+    document.getElementById('modal-sub').textContent='Inserisci il nome del manager per importare.';
+    document.getElementById('modal-lbl').textContent='Nome manager';
+    document.getElementById('modal-cancel').textContent='Annulla';
+    document.getElementById('modal-ok').textContent='Importa';
+  }else{
+    document.getElementById('modal-title').textContent='Manager name required';
+    document.getElementById('modal-sub').textContent='Enter the manager name to continue importing.';
+    document.getElementById('modal-lbl').textContent='Manager name';
+    document.getElementById('modal-cancel').textContent='Cancel';
+    document.getElementById('modal-ok').textContent='Import';
+  }
+}
+function closeModal(){
+  document.getElementById('mgr-modal-overlay').style.display='none';
+}
+
+function checkModalName(){
+  const name=document.getElementById('modal-name-inp').value.trim();
+  const w=document.getElementById('modal-warn');
+  if(!name){w.style.display='none';return;}
+  const sim=findSim(name,DB.managers);
+  if(sim&&sim.toLowerCase()!==name.toLowerCase()){
+    modalSugName=sim;
+    document.getElementById('modal-warn-txt').textContent='⚠️ "'+name+'" → Did you mean "'+sim+'"?';
+    w.style.display='flex';
+  } else {
+    w.style.display='none';
+    modalSugName=null;
+  }
+}
+
+function useModalSugg(){
+  document.getElementById('modal-name-inp').value=modalSugName;
+  document.getElementById('modal-warn').style.display='none';
+  modalSugName=null;
+}
+
+function keepModalMine(){
+  document.getElementById('modal-warn').style.display='none';
+  modalSugName=null;
+}
+
+function confirmModalImport(){
+  const name=document.getElementById('modal-name-inp').value.trim();
+  if(!name){
+    document.getElementById('modal-name-inp').style.borderColor='var(--red)';
+    setTimeout(()=>document.getElementById('modal-name-inp').style.borderColor='',1500);
+    return;
+  }
+  // Copy name to main input and close modal
+  document.getElementById('mname').value=name;
+  closeModal();
+  // Proceed with import
+  runImport(name);
+}
+
+// Modal listeners attached on first open (avoids null DOM errors)
+var _modalListenersAttached=false;
+function attachModalListeners(){
+  if(_modalListenersAttached)return;
+  _modalListenersAttached=true;
+  document.getElementById('mgr-modal-overlay').addEventListener('click',function(e){
+    if(e.target===this)closeModal();
+  });
+  document.getElementById('modal-name-inp').addEventListener('keydown',function(e){
+    if(e.key==='Enter')confirmModalImport();
+    if(e.key==='Escape')closeModal();
+  });
+}
+
+</script>
+
+<div id="mgr-modal-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--card);border-radius:var(--r);padding:24px;width:360px;max-width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:1px solid var(--bo2)">
+    <div style="font-size:15px;font-weight:700;margin-bottom:6px" id="modal-title">Manager name required</div>
+    <div style="font-size:12px;color:var(--tx2);margin-bottom:14px" id="modal-sub">Enter the manager name to continue importing.</div>
+    <div style="font-size:10px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px" id="modal-lbl">Manager name</div>
+    <input class="ninp" id="modal-name-inp" type="text" placeholder="e.g. Salvo Spascio" oninput="checkModalName()" style="margin-bottom:8px">
+    <div id="modal-warn" style="background:var(--amber2);border:1px solid rgba(133,79,11,.25);border-radius:var(--r3);padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--amber);display:none;align-items:center;gap:8px">
+      <span id="modal-warn-txt"></span>
+      <button class="wbtn" onclick="useModalSugg()">Use suggested</button>
+      <button class="wbtn" onclick="keepModalMine()">Keep mine</button>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+      <button class="btn btn-g" onclick="closeModal()" id="modal-cancel">Cancel</button>
+      <button class="btn btn-p" onclick="confirmModalImport()" id="modal-ok">Import</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirm-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--card);border-radius:var(--r);padding:24px;width:340px;max-width:90%;border:1px solid var(--bo2)">
+    <div style="font-size:15px;font-weight:700;margin-bottom:8px;color:var(--red)" id="confirm-title">Clear database</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:20px;line-height:1.6" id="confirm-msg"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeConfirm()" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-p" onclick="confirmClear()" id="confirm-ok" style="background:var(--red)">Delete</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
